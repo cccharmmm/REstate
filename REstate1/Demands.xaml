@@ -1,0 +1,268 @@
+﻿<Window x:Class="REstate1.Demands"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:REstate1"
+        mc:Ignorable="d"
+        Title="Управление потребностями" Height="700" Width="1000"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Background" Value="#B0BEC5"/>
+            <Setter Property="Foreground" Value="#37474F"/>
+            <Setter Property="BorderBrush" Value="#B0BEC5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                        BorderBrush="{TemplateBinding BorderBrush}" 
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                            <Border CornerRadius="3">
+                                <ContentPresenter HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                            </Border>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#90A4AE"/>
+                    <Setter Property="BorderBrush" Value="#90A4AE"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Background" Value="#ECEFF1"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+ CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                 VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#CFD8DC"/>
+                    <Setter Property="Foreground" Value="Gray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ContentLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="#37474F"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="15"/>
+        </Style>
+        <Style x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="Transparent" BorderBrush="Transparent" BorderThickness="1">
+                            <Path x:Name="Arrow" VerticalAlignment="Center" HorizontalAlignment="Right" Data="M 0 0 L 4 4 L 8 0 Z" Fill="Black"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Arrow" Property="Fill" Value="#FF569DE5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Arrow" Property="Fill" Value="#FF2454E5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="3,3,23,3"/>
+        </Style>
+        <Style x:Key="PlaceholderComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="5"/>
+                            <TextBlock x:Name="placeholder" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+                               Foreground="LightGray"
+                               Margin="5,0,0,0"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False"
+                               Visibility="Collapsed"/>
+                            <ToggleButton x:Name="toggleButton" Style="{StaticResource ComboBoxToggleButton}" Grid.Column="2" Focusable="false"
+                                  IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                  ClickMode="Press"/>
+                            <ContentPresenter Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}"
+                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                      ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                      Margin="3,3,23,3"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox" Style="{StaticResource ComboBoxTextBox}" HorizontalAlignment="Left"
+                             VerticalAlignment="Center" Margin="3,3,23,3" Focusable="True"
+                             Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup x:Name="PART_Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False"
+                           PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="White" BorderBrush="Gray" BorderThickness="1"/>
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#A5DCFD"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PlaceholderTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Margin" Value="0,10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="border" Background="{TemplateBinding Background}"
+     BorderBrush="{TemplateBinding BorderBrush}"
+     BorderThickness="{TemplateBinding BorderThickness}"
+     CornerRadius="5"/>
+                            <TextBlock x:Name="placeholder" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
+        Foreground="LightGray"
+        Margin="5,0,0,0"
+        VerticalAlignment="Center"
+        IsHitTestVisible="False"
+        Visibility="Collapsed"/>
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#A5DCFD"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  Background="#B0BEC5">
+                <Button Content="Риэлтор" Style="{StaticResource NavButtonStyle}" Margin="65 0 20 0" Click="Agents_Click"/>
+                <Button Content="Клиент" Style="{StaticResource NavButtonStyle}" Click="Clients_Click"/>
+                <Button Content="Объекты недвижимости" Style="{StaticResource NavButtonStyle}" Click="RealEstates_Click"/>
+                <Button Content="Предложение" Style="{StaticResource NavButtonStyle}" Click="Supplies_Click"/>
+                <Button Content="Потребность" Style="{StaticResource NavButtonStyle}"/>
+                <Button Content="Сделка" Style="{StaticResource NavButtonStyle}" Click="Deals_Click"/>
+            </StackPanel>
+            <ContentControl x:Name="MainContent" Margin="15"/>
+        </DockPanel>
+        <StackPanel Orientation="Vertical" Margin="20 70 20 20" HorizontalAlignment="Left" Width="250">
+            <ComboBox x:Name="ClientComboBox" Margin="0 10 0 0" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Клиент"/>
+            <ComboBox x:Name="AgentComboBox" Margin="0 10 0 0" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Риэлтор"/>
+            <ComboBox x:Name="TypeComboBox" Margin="0 10 0 0" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Тип объекта недвижимости"
+                      SelectionChanged="TypeComboBox_SelectionChanged">
+                <ComboBoxItem>Квартира</ComboBoxItem>
+                <ComboBoxItem>Дом</ComboBoxItem>
+                <ComboBoxItem>Земля</ComboBoxItem>
+            </ComboBox>
+            <TextBox x:Name="CityTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Город" MaxLength="15"/>
+            <TextBox x:Name="StreetTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Улица" MaxLength="30"/>
+            <TextBox x:Name="HouseTextBox"  Margin="0 10 0 0"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Дом" MaxLength="5"/>
+            <TextBox x:Name="NumberTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Квартира" MaxLength="5"/>
+            <TextBox x:Name="MinPriceTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Минимальная цена" MaxLength="7"/>
+            <TextBox x:Name="MaxPriceTextBox"  Margin="0 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Максимальная цена" MaxLength="7"/>
+            <Button Content="Создать"  Style="{StaticResource ActionButtonStyle}"  Margin="0 5 0 0"/>
+            <Button Content="Изменить"  Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
+            <Button Content="Удалить" Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="-150 70 20 20" HorizontalAlignment="Center" Width="250">
+            <TextBox x:Name="MinAreaTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. площадь" MaxLength="7" Width="120" Visibility="Collapsed"/>
+            <TextBox x:Name="MaxAreaTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Макс. площадь" MaxLength="7" Width="120" Visibility="Collapsed"/>
+            <TextBox x:Name="MinRoomsTextBox" Margin="-135 10 0 0"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. комнат" MaxLength="1" Width="120" Visibility="Collapsed"/>
+            <TextBox x:Name="MaxRoomsTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Макс. комнат" MaxLength="1" Width="120" Visibility="Collapsed"/>
+            <TextBox x:Name="MinFloorTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
+            <TextBox x:Name="MaxFloorTextBox" Margin="-135 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Макс. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
+        </StackPanel>
+        <ListBox x:Name="DemandssListBox" HorizontalAlignment="Right" Width="520" Height="500" Margin="0 80 40 20 " VerticalAlignment="Top"/>
+        <StackPanel Orientation="Horizontal" Margin="0,0,50,20" HorizontalAlignment="Right" Height="62" VerticalAlignment="Bottom" Width="500">
+            <Button Content="Найти подходящие предложения" Margin="10" Style="{StaticResource ActionButtonStyle}"  Width="250" Height="36"/>
+            <Button Content="К сделке" Margin="10" Style="{StaticResource ActionButtonStyle}"  Height="36"/>
+        </StackPanel>
+    </Grid>
+</Window>
