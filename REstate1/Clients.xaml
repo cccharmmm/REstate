@@ -123,6 +123,9 @@
     </Window.Resources>
     <Grid>
         <DockPanel>
+            <Image Source="logo.png" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 80 0 10"/>
+        </DockPanel>
+        <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  Background="#B0BEC5">
                 <Button Content="Риэлтор" Style="{StaticResource NavButtonStyle}" Margin="65 0 20 0" Click="Agents_Click"/>
                 <Button Content="Клиент" Style="{StaticResource NavButtonStyle}" />

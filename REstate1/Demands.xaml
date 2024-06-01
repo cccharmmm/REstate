@@ -222,6 +222,9 @@
     </Window.Resources>
     <Grid>
         <DockPanel>
+            <Image Source="logo.png" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 80 0 10"/>
+        </DockPanel>
+        <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal"  Background="#B0BEC5">
                 <Button Content="Риэлтор" Style="{StaticResource NavButtonStyle}" Margin="65 0 20 0" Click="Agents_Click"/>
                 <Button Content="Клиент" Style="{StaticResource NavButtonStyle}" Click="Clients_Click"/>
@@ -259,7 +262,7 @@
             <TextBox x:Name="MinFloorTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
             <TextBox x:Name="MaxFloorTextBox" Margin="-135 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Макс. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
         </StackPanel>
-        <ListBox x:Name="DemandssListBox" HorizontalAlignment="Right" Width="520" Height="500" Margin="0 80 40 20 " VerticalAlignment="Top"/>
+        <ListBox x:Name="DemandssListBox" HorizontalAlignment="Right" Width="520" Height="460" Margin="0 130 40 20 " VerticalAlignment="Top"/>
         <StackPanel Orientation="Horizontal" Margin="0,0,50,20" HorizontalAlignment="Right" Height="62" VerticalAlignment="Bottom" Width="500">
             <Button Content="Найти подходящие предложения" Margin="10" Style="{StaticResource ActionButtonStyle}"  Width="250" Height="36"/>
             <Button Content="К сделке" Margin="10" Style="{StaticResource ActionButtonStyle}"  Height="36"/>

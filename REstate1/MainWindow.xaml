@@ -58,5 +58,8 @@
             </StackPanel>
             <ContentControl x:Name="MainContent" Margin="15"/>
         </DockPanel>
+        <DockPanel>
+            <Image Source="logo.png" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 80 0 10"/>
+        </DockPanel>
     </Grid>
 </Window>
