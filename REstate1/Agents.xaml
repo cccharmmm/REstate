@@ -120,7 +120,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid>
+    <Grid RenderTransformOrigin="0.466,0.567">
         <DockPanel>
             <Image Source="logo.png" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0 80 0 10"/>
         </DockPanel>
@@ -140,15 +140,28 @@
             <TextBox x:Name="NameTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Имя" MaxLength="15"/>
             <TextBox x:Name="PatronymicTextBox"  Margin="0 10 0 0"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Отчество" MaxLength="30"/>
             <TextBox x:Name="DealShareTextBox"  Margin="0 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Доля от комиссии" MaxLength="3"/>
-            <Button Content="Создать"  Style="{StaticResource ActionButtonStyle}"  Margin="0 5 0 0"/>
-            <Button Content="Изменить"  Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
-            <Button Content="Удалить" Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
+            <Button Content="Создать"  Style="{StaticResource ActionButtonStyle}"  Margin="0 5 0 0" Click="CreateAgent_Click"/>
+            <Button Content="Изменить"  Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0" Click="UpdateAgent_Click"/>
+            <Button Content="Удалить" Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0" Click="DeleteAgent_Click"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0 68 40 40" HorizontalAlignment="Right" Height="50" VerticalAlignment="Top">
             <Button Content="Поиск по ФИО" Margin="10 10 0 0" Style="{StaticResource ActionButtonStyle}" Width="120"/>
             <Button Content="Обновить" Margin="10 10 0 0" Style="{StaticResource ActionButtonStyle}" Width="90"/>
         </StackPanel>
-        <ListBox x:Name="AgentListBox" HorizontalAlignment="Right" Width="450" Height="280" Margin="0 90 40 20 " />
+        <ListBox x:Name="AgentListBox" HorizontalAlignment="Right" Width="450" Height="280" Margin="0 90 40 20">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding LastName}" Margin="5"/>
+                        <TextBlock Text="{Binding FirstName}" Margin="5"/>
+                        <TextBlock Text="{Binding MiddleName}" Margin="5"/>
+                        <TextBlock Text="{Binding DealShare}" Margin="5"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+
         <StackPanel Orientation="Horizontal" Margin="0,0,45,0" HorizontalAlignment="Right" Height="62" VerticalAlignment="Bottom">
             <Button Content="Отобразить потребности" Margin="10" Style="{StaticResource ActionButtonStyle}"  Height="36"/>
             <Button Content="Отобразить предложения" Margin="10" Style="{StaticResource ActionButtonStyle}"  Height="36"/>

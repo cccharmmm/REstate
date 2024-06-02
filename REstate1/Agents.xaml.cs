@@ -1,4 +1,6 @@
-﻿using System;
+﻿using REstate1.Data.Entities;
+using REstate1.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +24,7 @@ namespace REstate1
         public Agents()
         {
             InitializeComponent();
+            Loaded += Agents_Loaded; 
         }
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
@@ -58,5 +61,75 @@ namespace REstate1
             this.Close();
             deals.Show();
         }
+
+        private void CreateAgent_Click(object sender, RoutedEventArgs e)
+        {
+            using (var context = new RealEstateContext())
+            {
+                var agent = new Agent
+                {
+                    LastName = SurnameTextBox.Text,
+                    FirstName = NameTextBox.Text,
+                    MiddleName = PatronymicTextBox.Text,
+                    DealShare = DealShareTextBox.Text
+                };
+
+                context.Agent.Add(agent);
+                context.SaveChanges();
+
+                MessageBox.Show("Агент успешно создан!");
+            }
+        }
+        private void UpdateAgentList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                AgentListBox.ItemsSource = context.Agent.ToList();
+            }
+        }
+
+        private void Agents_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateAgentList();
+        }
+
+
+        private void DeleteAgent_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedAgent = AgentListBox.SelectedItem as Agent;
+            if (selectedAgent != null)
+            {
+                using (var context = new RealEstateContext())
+                {
+                    context.Agent.Attach(selectedAgent);
+                    context.Agent.Remove(selectedAgent);
+                    context.SaveChanges();
+                }
+
+                MessageBox.Show("Агент успешно удален.");
+                UpdateAgentList(); 
+            }
+            else
+            {
+                MessageBox.Show("Выберите агента для удаления.");
+            }
+        }
+        private void UpdateAgent_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedAgent = AgentListBox.SelectedItem as Agent;
+            if (selectedAgent != null)
+            {
+                EditAgents editAgent = new EditAgents(selectedAgent);
+                editAgent.ShowDialog();
+                UpdateAgentList();
+            }
+            else
+            {
+                MessageBox.Show("Выберите агента для редактирования.");
+            }
+        }
+
+
+
     }
 }
