@@ -1,4 +1,5 @@
-﻿using System;
+﻿using REstate1.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,9 @@ namespace REstate1
         public Clients()
         {
             InitializeComponent();
+            Loaded += Clients_Loaded;
         }
+
         private void Agents_Click(object sender, RoutedEventArgs e)
         {
             Agents agents = new Agents();
@@ -56,6 +59,77 @@ namespace REstate1
             Deals deals = new Deals();
             this.Close();
             deals.Show();
+        }
+
+        private void UpdateClientList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                ClientListBox.ItemsSource = context.Client.ToList();
+            }
+        }
+
+        private void Clients_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateClientList();
+        }
+
+        public void CreateClient_Click(object sender, RoutedEventArgs e)
+        {
+            using(var context = new RealEstateContext())
+            {
+                var client = new Client
+                {
+                    LastName = SurnameTextBox.Text,
+                    FirstName = NameTextBox.Text,
+                    MiddleName = PatronymicTextBox.Text,
+                    Phone = PhoneTextBox.Text,
+                    Email = EmailTextBox.Text
+                };
+                context.Client.Add(client);
+                context.SaveChanges();
+                MessageBox.Show("Клиент успешно создан!");
+            }
+        }
+
+        public void Update_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateClientList();
+        }
+
+        public void DeleteClient_Click(Object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientListBox.SelectedItem as Client;
+            if (selectedClient != null)
+            {
+                using(var context = new RealEstateContext())
+                {
+                    context.Client.Attach(selectedClient);
+                    context.Client.Remove(selectedClient);
+                    context.SaveChanges();
+                }
+                MessageBox.Show("Клиент успешно удален.");
+                UpdateClientList();
+            }
+            else
+            {
+                MessageBox.Show("Выберите агента для удаления.");
+            }
+        }
+
+        public void UpdateClient_Click(Object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientListBox.SelectedItem as Client;
+            if(selectedClient != null)
+            {
+                EditClients editClients = new EditClients(selectedClient);
+                editClients.ShowDialog();
+                UpdateClientList();
+            }
+            else
+            {
+                MessageBox.Show("Выберите клиента для редактирования.");
+            }
         }
     }
 }
