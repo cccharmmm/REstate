@@ -185,6 +185,9 @@
     <Compile Include="EditAgents.xaml.cs">
       <DependentUpon>EditAgents.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditClients.xaml.cs">
+      <DependentUpon>EditClients.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RealEstates.xaml.cs">
       <DependentUpon>RealEstates.xaml</DependentUpon>
     </Compile>
@@ -210,6 +213,10 @@
     <Page Include="EditAgents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditClients.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

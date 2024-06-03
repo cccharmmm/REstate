@@ -1,28 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using REstate1.Data.Entities;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace REstate1
 {
-    /// <summary>
-    /// Логика взаимодействия для Agents.xaml
-    /// </summary>
     public partial class Agents : Window
     {
         public Agents()
         {
             InitializeComponent();
+            Loaded += Agent_Loaded;
         }
+
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
             Clients clients = new Clients();
@@ -30,7 +21,6 @@ namespace REstate1
             clients.Show();
         }
 
-       
         private void RealEstates_Click(object sender, RoutedEventArgs e)
         {
             RealEstates realEstates = new RealEstates();
@@ -59,6 +49,19 @@ namespace REstate1
             deals.Show();
         }
 
+        private void UpdateAgentList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                AgentListBox.ItemsSource = context.Agent.ToList();
+            }
+        }
+
+        private void Agent_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdateAgentList();
+        }
+
         private void CreateAgent_Click(object sender, RoutedEventArgs e)
         {
             using (var context = new RealEstateContext())
@@ -73,23 +76,10 @@ namespace REstate1
 
                 context.Agent.Add(agent);
                 context.SaveChanges();
-
                 MessageBox.Show("Агент успешно создан!");
+                UpdateAgentList();
             }
         }
-        private void UpdateAgentList()
-        {
-            using (var context = new RealEstateContext())
-            {
-                AgentListBox.ItemsSource = context.Agent.ToList();
-            }
-        }
-
-        private void Agents_Loaded(object sender, RoutedEventArgs e)
-        {
-            UpdateAgentList();
-        }
-
 
         private void DeleteAgent_Click(object sender, RoutedEventArgs e)
         {
@@ -104,13 +94,14 @@ namespace REstate1
                 }
 
                 MessageBox.Show("Агент успешно удален.");
-                UpdateAgentList(); 
+                UpdateAgentList();
             }
             else
             {
                 MessageBox.Show("Выберите агента для удаления.");
             }
         }
+
         private void UpdateAgent_Click(object sender, RoutedEventArgs e)
         {
             var selectedAgent = AgentListBox.SelectedItem as Agent;
@@ -125,8 +116,5 @@ namespace REstate1
                 MessageBox.Show("Выберите агента для редактирования.");
             }
         }
-
-
-
     }
 }
