@@ -176,8 +176,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Data\Entities\Agent.cs" />
+    <Compile Include="Data\Entities\Client.cs" />
+    <Compile Include="Data\RealEstateContext.cs" />
     <Compile Include="Deals.xaml.cs">
       <DependentUpon>Deals.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EditAgents.xaml.cs">
+      <DependentUpon>EditAgents.xaml</DependentUpon>
     </Compile>
     <Compile Include="RealEstates.xaml.cs">
       <DependentUpon>RealEstates.xaml</DependentUpon>
@@ -198,6 +204,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Demands.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditAgents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -245,6 +255,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\202406022330455_Agent.resx">
+      <DependentUpon>202406022330455_Agent.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
