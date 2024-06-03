@@ -157,7 +157,9 @@
                         <TextBlock Text="{Binding LastName}" Margin="5"/>
                         <TextBlock Text="{Binding FirstName}" Margin="5"/>
                         <TextBlock Text="{Binding MiddleName}" Margin="5"/>
-                        <TextBlock Text="{Binding DealShare}" Margin="5"/>
+                        <TextBlock Text="{Binding Phone}" Margin="5"/>
+                        <TextBlock Text="{Binding Email}" Margin="5"/>
+
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
