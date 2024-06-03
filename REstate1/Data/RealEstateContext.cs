@@ -1,4 +1,5 @@
 ﻿using REstate1.Data.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 
 public class RealEstateContext : DbContext
@@ -7,6 +8,8 @@ public class RealEstateContext : DbContext
     {
     }
 
+
     public DbSet<Agent> Agent { get; set; }
-    public DbSet<Client> Client { get; set; }
+
+        public DbSet<Client> Client { get; set; }
 }

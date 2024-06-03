@@ -71,7 +71,7 @@ namespace REstate1
                     LastName = SurnameTextBox.Text,
                     FirstName = NameTextBox.Text,
                     MiddleName = PatronymicTextBox.Text,
-                    DealShare = DealShareTextBox.Text
+                    DealShare = Convert.ToInt32(DealShareTextBox.Text)
                 };
 
                 context.Agent.Add(agent);
