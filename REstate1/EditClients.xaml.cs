@@ -106,7 +106,24 @@ namespace REstate1
                         original.MiddleName = editedClient.MiddleName;
                         original.Phone = editedClient.Phone;
                         original.Email = editedClient.Email;
-
+                        if (!string.IsNullOrEmpty(PhoneTextBox.Text))
+                        {
+                            var phoneNumber = PhoneTextBox.Text;
+                            if (context.Client.Any(c => c.Phone == phoneNumber))
+                            {
+                                MessageBox.Show("Этот номер телефона уже зарегистрирован");
+                                return;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(EmailTextBox.Text))
+                        {
+                            var email = EmailTextBox.Text;
+                            if (context.Client.Any(c => c.Email == email))
+                            {
+                                MessageBox.Show("Эта почта уже зарегистрирована");
+                                return;
+                            }
+                        }
                         context.SaveChanges();
                         Close();
                     }

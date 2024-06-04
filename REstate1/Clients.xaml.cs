@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -136,6 +137,7 @@ namespace REstate1
                     MessageBox.Show("Некорректный формат email");
                     return;
                 }
+
             }
             if (!string.IsNullOrEmpty(PhoneTextBox.Text))
             {
@@ -148,6 +150,7 @@ namespace REstate1
                     MessageBox.Show("Некорректный формат номера телефона. Введите номер в формате +7XXXXXXXXXX.");
                     return;
                 }
+                
             }
 
 
@@ -161,7 +164,24 @@ namespace REstate1
                     Phone = PhoneTextBox.Text,
                     Email = EmailTextBox.Text
                 };
-
+                if (!string.IsNullOrEmpty(PhoneTextBox.Text))
+                {
+                    var phoneNumber = PhoneTextBox.Text;
+                if (context.Client.Any(c => c.Phone == phoneNumber))
+                {
+                    MessageBox.Show("Этот номер телефона уже зарегистрирован");
+                    return;
+                }
+                }
+                if (!string.IsNullOrEmpty(EmailTextBox.Text))
+                {
+                    var email = EmailTextBox.Text;
+                    if (context.Client.Any(c => c.Email == email))
+                    {
+                        MessageBox.Show("Эта почта уже зарегистрирована");
+                        return;
+                    }
+                }
                 context.Client.Add(client);
                 context.SaveChanges();
                 MessageBox.Show("Клиент успешно создан!");
