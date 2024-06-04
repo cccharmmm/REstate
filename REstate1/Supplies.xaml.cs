@@ -113,13 +113,21 @@ namespace REstate1
 
         private void DeleteSupply(object sender, RoutedEventArgs e)
         {
-
             var selectedSup = SuppliesListBox.SelectedItem as Supply;
             if (selectedSup == null)
             {
                 MessageBox.Show("Выберите запись для удаления");
                 return;
             }
+
+            // Проверка, участвует ли выбранное предложение в какой-либо сделке
+            bool isSupplyInDeal = IsSupplyInDeal(selectedSup);
+            if (isSupplyInDeal)
+            {
+                MessageBox.Show("Невозможно удалить предложение, которое участвует в сделке.");
+                return;
+            }
+
             MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данное предложение?", "Подтверждение удаления", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
@@ -133,8 +141,18 @@ namespace REstate1
                     }
                 }
             }
+
             LoadSupplies(null, null);
         }
+
+        private bool IsSupplyInDeal(Supply supply)
+        {
+            using (var context = new RealEstateContext())
+            {
+                return context.Deals.Any(deal => deal.Supply_Id == supply.Id);
+            }
+        }
+
         private void EditSupply(object sender, RoutedEventArgs e)
         {
             var selectedSupply = SuppliesListBox.SelectedItem as Supply;
@@ -183,6 +201,16 @@ namespace REstate1
         {
             LoadSupplies(sender, e);
         }
+
+        private void PriceTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, 0))
+            {
+                e.Handled = true; 
+            }
+        }
+
+
 
         private void ClearForm()
         {
