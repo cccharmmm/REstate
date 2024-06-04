@@ -37,6 +37,6 @@ namespace REstate1.Data.Entities
         [ForeignKey("ApartmentDemand")]
         public int? Id_ApartmentDemand { get; set; }
         public virtual ApartmentDemand ApartmentDemand { get; set; }
-        public virtual ICollection<Deal> Deals { get; set; }
+        //public virtual ICollection<Deal> Deals { get; set; }
     }
 }

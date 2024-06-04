@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using REstate1.Data;
 using REstate1.Data.Entities;
 
 namespace REstate1
@@ -96,7 +96,7 @@ namespace REstate1
 
                 if (selectedFilter.Content.ToString() == "по адресу")
                 {
-                    Label1.Visibility= Visibility.Collapsed;
+                    Label1.Visibility = Visibility.Collapsed;
                     AddressComboBox.Visibility = Visibility.Visible;
                     Type2ComboBox.Visibility = Visibility.Collapsed;
                     ApplyButton.Visibility = Visibility.Visible;
@@ -212,46 +212,51 @@ namespace REstate1
         }
         private void DeleteEstate(object sender, RoutedEventArgs e)
         {
-            var selectedEstate = EstatesListBox.SelectedItem as RealEstate;
-            if (selectedEstate != null)
+            try
             {
-                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данную недвижимость?", "Подтверждение удаления", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
+                var selectedEstate = EstatesListBox.SelectedItem as RealEstate;
+                if (selectedEstate != null)
                 {
-                    using (var context = new RealEstateContext())
+                    MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данную недвижимость?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
                     {
+                        using (var context = new RealEstateContext())
+                        {
+                            // Находим связанные записи в таблице Deal
+                            var dealsToRemove = context.Deals.Where(d => d.Supply.RealEstate.Id == selectedEstate.Id).ToList();
+                            context.Deals.RemoveRange(dealsToRemove);
 
-                        var dealsToRemove = context.Deals.Where(d => d.Supply.RealEstate.Id == selectedEstate.Id).ToList();
-                        context.Deals.RemoveRange(dealsToRemove);
-                        // Находим и удаляем связанные записи из таблиц House, Apartment и Land
-                        var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
-                        if (houseToRemove != null)
-                            context.House.Remove(houseToRemove);
+                            // Находим и удаляем связанные записи из таблиц House, Apartment и Land
+                            var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
+                            if (houseToRemove != null)
+                                context.House.Remove(houseToRemove);
 
-                        var apartmentToRemove = context.Apartment.FirstOrDefault(a => a.Id == selectedEstate.Id);
-                        if (apartmentToRemove != null)
-                            context.Apartment.Remove(apartmentToRemove);
+                            var apartmentToRemove = context.Apartment.FirstOrDefault(a => a.Id == selectedEstate.Id);
+                            if (apartmentToRemove != null)
+                                context.Apartment.Remove(apartmentToRemove);
 
-                        var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
-                        if (landToRemove != null)
-                            context.Land.Remove(landToRemove);
+                            var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
+                            if (landToRemove != null)
+                                context.Land.Remove(landToRemove);
 
-
-                        // Удаляем недвижимость
-                        context.RealEstate.Attach(selectedEstate);
-                        context.RealEstate.Remove(selectedEstate);
-                        context.SaveChanges();
+                            // Удаляем недвижимость
+                            context.RealEstate.Attach(selectedEstate);
+                            context.RealEstate.Remove(selectedEstate);
+                            context.SaveChanges();
+                        }
+                        MessageBox.Show("Недвижимость успешно удалена.");
+                        UpdateEstateList();
                     }
-                    MessageBox.Show("Недвижимость успешно удалена.");
-                    UpdateEstateList();
+                }
+                else
+                {
+                    MessageBox.Show("Выберите недвижимость для удаления.");
                 }
             }
-            else
+            catch (NullReferenceException)
             {
-                MessageBox.Show("Выберите недвижимость для удаления.");
+                MessageBox.Show("Выберите другую недвижимость для удаления.");
             }
         }
-
-
     }
 }

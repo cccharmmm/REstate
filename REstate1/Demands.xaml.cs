@@ -57,6 +57,23 @@ namespace REstate1
             this.Close();
             deals.Show();
         }
+
+        private void UpdateDemandsList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var demands = context.Demands
+                    .Include(d => d.Client)
+                    .Include(d => d.Agent)
+                    .Include(d => d.TypeRealEstate)
+                    .ToList();
+
+                DemandsListBox.ItemsSource = demands;
+            }
+        }
+
+
+
         private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             var selectedType = (TypeComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
