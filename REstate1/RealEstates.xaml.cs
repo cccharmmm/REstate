@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using REstate1.Data;
+using REstate1.Data.Entities;
 
 namespace REstate1
 {
-    /// <summary>
-    /// Логика взаимодействия для RealEstates.xaml
-    /// </summary>
     public partial class RealEstates : Window
     {
         public RealEstates()
         {
             InitializeComponent();
+            Loaded += LoadEstates;
+            LoadRealEstateTypes();
+            LoadDistricts();
         }
+
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
             Clients clients = new Clients();
@@ -37,7 +30,6 @@ namespace REstate1
             agents.Show();
         }
 
-       
         private void Supplies_Click(object sender, RoutedEventArgs e)
         {
             Supplies supplies = new Supplies();
@@ -58,17 +50,31 @@ namespace REstate1
             this.Close();
             deals.Show();
         }
-        private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            var selectedType = (TypeComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
 
-            if (selectedType == "Квартира" || selectedType == "Дом")
+        private void LoadEstates(object sender, RoutedEventArgs e)
+        {
+            UpdateRealEstatesList();
+        }
+
+        private void UpdateRealEstatesList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                EstatesListBox.ItemsSource = context.RealEstate.ToList();
+            }
+        }
+
+        private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
+
+            if (selectedType?.Name == "Квартира" || selectedType?.Name == "Дом")
             {
                 AreaTextBox.Visibility = Visibility.Visible;
                 FloorTextBox.Visibility = Visibility.Visible;
                 RoomsTextBox.Visibility = Visibility.Visible;
             }
-            else if (selectedType == "Земля")
+            else if (selectedType?.Name == "Земля")
             {
                 AreaTextBox.Visibility = Visibility.Visible;
                 FloorTextBox.Visibility = Visibility.Collapsed;
@@ -80,37 +86,83 @@ namespace REstate1
                 FloorTextBox.Visibility = Visibility.Collapsed;
                 RoomsTextBox.Visibility = Visibility.Collapsed;
             }
-
         }
-        private void FilterComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+
+        private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedType = (FilterComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
-
-            if (selectedType == "адресу")
+            if (FilterComboBox.SelectedItem != null)
             {
-              
-                AddressComboBox.Visibility = Visibility.Visible;
-                Type2ComboBox.Visibility = Visibility.Collapsed;
-                ApplyButton.Visibility = Visibility.Visible;
-                Label1.Visibility = Visibility.Collapsed;
-               
+                var selectedFilter = (ComboBoxItem)FilterComboBox.SelectedItem;
+                if (selectedFilter.Content.ToString() == "адресу")
+                {
+                    AddressComboBox.Visibility = Visibility.Visible;
+                    Type2ComboBox.Visibility = Visibility.Collapsed;
+                    ApplyButton.Visibility = Visibility.Visible;
+                }
+                else if (selectedFilter.Content.ToString() == "типу")
+                {
+                    AddressComboBox.Visibility = Visibility.Collapsed;
+                    Type2ComboBox.Visibility = Visibility.Visible;
+                    ApplyButton.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    AddressComboBox.Visibility = Visibility.Collapsed;
+                    Type2ComboBox.Visibility = Visibility.Collapsed;
+                    ApplyButton.Visibility = Visibility.Collapsed;
+                }
             }
-            else if (selectedType == "типу")
-            {
-              
-                AddressComboBox.Visibility = Visibility.Collapsed;
-                Type2ComboBox.Visibility = Visibility.Visible;
-                ApplyButton.Visibility = Visibility.Visible;
-                Label1.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-               
-                AddressComboBox.Visibility = Visibility.Collapsed;
-                Type2ComboBox.Visibility = Visibility.Collapsed;
-                ApplyButton.Visibility = Visibility.Collapsed;
-            }
-
         }
+
+        private void LoadRealEstateTypes()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.TypeRealEstate.ToList();
+                TypeComboBox.ItemsSource = types;
+            }
+        }
+
+        private void LoadDistricts()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.District.ToList();
+                DistrictComboBox.ItemsSource = types;
+            }
+        }
+
+        private void CreateEstate(object sender, RoutedEventArgs e)
+        {
+            var selectedDistrict = DistrictComboBox.SelectedItem as District;
+            var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
+
+            if (selectedDistrict == null || selectedType == null)
+            {
+                MessageBox.Show("Выберите район и тип объекта недвижимости.");
+                return;
+            }
+
+            using (var context = new RealEstateContext())
+            {
+                var estate = new RealEstate
+                {
+                    Address_City = CityTextBox.Text,
+                    Address_Street = StreetTextBox.Text,
+                    Address_House = HouseTextBox.Text,
+                    Address_Number = NumberTextBox.Text,
+                    District_Id = selectedDistrict.ID,
+                    Id_type = selectedType.Id_type
+                };
+                context.RealEstate.Add(estate);
+                context.SaveChanges();
+            }
+
+            UpdateRealEstatesList();
+        }
+
+
+
+
     }
 }
