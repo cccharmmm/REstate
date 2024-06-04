@@ -198,6 +198,56 @@ namespace REstate1
 
             UpdateRealEstatesList();
         }
+        private void UpdateEstateList()
+        {
+            using (var context = new RealEstateContext())
+            {
+                EstatesListBox.ItemsSource = context.RealEstate.ToList();
+            }
+        }
+
+        public void Update_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateEstateList();
+        }
+        private void DeleteEstate(object sender, RoutedEventArgs e)
+        {
+            var selectedEstate = EstatesListBox.SelectedItem as RealEstate;
+            if (selectedEstate != null)
+            {
+                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данную недвижимость?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    using (var context = new RealEstateContext())
+                    {
+                        // Находим и удаляем связанные записи из таблиц House, Apartment и Land
+                        var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
+                        if (houseToRemove != null)
+                            context.House.Remove(houseToRemove);
+
+                        var apartmentToRemove = context.Apartment.FirstOrDefault(a => a.Id == selectedEstate.Id);
+                        if (apartmentToRemove != null)
+                            context.Apartment.Remove(apartmentToRemove);
+
+                        var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
+                        if (landToRemove != null)
+                            context.Land.Remove(landToRemove);
+
+                        // Удаляем недвижимость
+                        context.RealEstate.Attach(selectedEstate);
+                        context.RealEstate.Remove(selectedEstate);
+                        context.SaveChanges();
+                    }
+                    MessageBox.Show("Недвижимость успешно удалена.");
+                    UpdateEstateList();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите недвижимость для удаления.");
+            }
+        }
+
 
     }
 }

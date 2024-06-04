@@ -16,4 +16,7 @@ public class RealEstateContext : DbContext
     public DbSet<TypeRealEstate> TypeRealEstate { get; set; }
     public DbSet<House> House { get; set; }
     public DbSet<Supply> Supply { get; set; }
+    public DbSet<Deal> Deals { get; set; }
+    public DbSet<Demand> Demands { get; set; }
+
 }
