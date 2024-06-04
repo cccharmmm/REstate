@@ -220,6 +220,9 @@ namespace REstate1
                 {
                     using (var context = new RealEstateContext())
                     {
+
+                        var dealsToRemove = context.Deals.Where(d => d.Supply.RealEstate.Id == selectedEstate.Id).ToList();
+                        context.Deals.RemoveRange(dealsToRemove);
                         // Находим и удаляем связанные записи из таблиц House, Apartment и Land
                         var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
                         if (houseToRemove != null)
@@ -232,6 +235,7 @@ namespace REstate1
                         var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
                         if (landToRemove != null)
                             context.Land.Remove(landToRemove);
+
 
                         // Удаляем недвижимость
                         context.RealEstate.Attach(selectedEstate);
