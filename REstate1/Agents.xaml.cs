@@ -269,6 +269,20 @@ namespace REstate1
             }
 
             int agentId = selectedAgent.Id;
+
+            using (var context = new RealEstateContext())
+            {
+                var demands = context.Demands
+                    .Where(d => d.AgentId == agentId)
+                    .ToList();
+
+                if (demands.Count == 0)
+                {
+                    MessageBox.Show("У выбранного риэлтора нет потребностей");
+                    return;
+                }
+            }
+
             AgentDemand agentDemandWindow = new AgentDemand(agentId);
             agentDemandWindow.ShowDialog();
 
@@ -284,6 +298,20 @@ namespace REstate1
             }
 
             int agentId = selectedAgent.Id;
+
+            using (var context = new RealEstateContext())
+            {
+                var supplies = context.Supply
+                    .Where(s => s.AgentId == agentId)
+                    .ToList();
+
+                if (supplies.Count == 0)
+                {
+                    MessageBox.Show("У выбранного риэлтора нет предложений");
+                    return;
+                }
+            }
+
             AgentSupply agentSupplyWindow = new AgentSupply(agentId);
             agentSupplyWindow.ShowDialog();
         }

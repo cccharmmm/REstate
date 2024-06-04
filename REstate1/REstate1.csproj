@@ -182,6 +182,12 @@
     <Compile Include="AgentSupply.xaml.cs">
       <DependentUpon>AgentSupply.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ClientDemand.xaml.cs">
+      <DependentUpon>ClientDemand.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ClientSupply.xaml.cs">
+      <DependentUpon>ClientSupply.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Data\Entities\Agent.cs" />
     <Compile Include="Data\Entities\Apartment.cs" />
     <Compile Include="Data\Entities\ApartmentDemand.cs" />
@@ -229,7 +235,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ClientDemand.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Clients.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientSupply.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

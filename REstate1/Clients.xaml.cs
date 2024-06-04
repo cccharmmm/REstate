@@ -313,5 +313,62 @@ namespace REstate1
 
             return v1[s2.Length];
         }
+
+        private void showDemand_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientListBox.SelectedItem as Client;
+            if (selectedClient == null)
+            {
+                MessageBox.Show("Выберите клиента для отображения его потребностей");
+                return;
+            }
+
+            int clientId = selectedClient.Id;
+
+            using (var context = new RealEstateContext())
+            {
+                var demands = context.Demands
+                    .Where(d => d.ClientId == clientId)
+                    .ToList();
+
+                if (demands.Count == 0)
+                {
+                    MessageBox.Show("У выбранного клиента нет потребностей");
+                    return;
+                }
+            }
+
+            ClientDemand clientDemandWindow = new ClientDemand(clientId);
+            clientDemandWindow.ShowDialog();
+
+        }
+
+        private void showSupply_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientListBox.SelectedItem as Client;
+            if (selectedClient == null)
+            {
+                MessageBox.Show("Выберите клиента для отображения его предложений");
+                return;
+            }
+
+            int clientId = selectedClient.Id;
+
+            using (var context = new RealEstateContext())
+            {
+                var supplies = context.Supply
+                    .Where(s => s.ClientId == clientId)
+                    .ToList();
+
+                if (supplies.Count == 0)
+                {
+                    MessageBox.Show("У выбранного клиента нет предложений");
+                    return;
+                }
+            }
+
+            ClientSupply clientSupplyWindow = new ClientSupply(clientId);
+            clientSupplyWindow.ShowDialog();
+        }
     }
 }
