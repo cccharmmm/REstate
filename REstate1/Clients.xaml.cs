@@ -232,5 +232,86 @@ namespace REstate1
                 MessageBox.Show("Выберите клиента для редактирования.");
             }
         }
+
+        private void searchFIO_Click(object sender, RoutedEventArgs e)
+        {
+            List<string> nameParts = new List<string>();
+
+            if (!string.IsNullOrEmpty(SurnameTextBox.Text))
+                nameParts.Add(SurnameTextBox.Text);
+
+            if (!string.IsNullOrEmpty(NameTextBox.Text))
+                nameParts.Add(NameTextBox.Text);
+
+            if (!string.IsNullOrEmpty(PatronymicTextBox.Text))
+                nameParts.Add(PatronymicTextBox.Text);
+
+            if (nameParts.Count == 0)
+            {
+                MessageBox.Show("Пожалуйста, заполните хотя бы одно из полей ФИО перед выполнением поиска.");
+                return;
+            }
+
+            string targetName = string.Join(" ", nameParts);
+
+            using (var context = new RealEstateContext())
+            {
+                var clients = context.Client.ToList();
+
+                var matchingClients = clients.Where(client =>
+                    fuzzy_search($"{client.LastName} {client.FirstName} {client.MiddleName}", targetName) ||
+                    fuzzy_search(client.LastName, targetName) || 
+                    fuzzy_search(client.FirstName, targetName) ||
+                    fuzzy_search(client.MiddleName, targetName));
+
+                ClientListBox.ItemsSource = null;
+                ClientListBox.Items.Clear();
+                ClientListBox.ItemsSource = matchingClients;
+            }
+        }
+
+        private bool fuzzy_search(string name, string target, int threshold = 3)
+        {
+            int distance = LevenshteinDistance(name.ToLower(), target.ToLower());
+            return distance <= threshold;
+        }
+        private int LevenshteinDistance(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1))
+            {
+                return string.IsNullOrEmpty(s2) ? 0 : s2.Length;
+            }
+
+            if (string.IsNullOrEmpty(s2))
+            {
+                return s1.Length;
+            }
+
+            int[] v0 = new int[s2.Length + 1];
+            int[] v1 = new int[s2.Length + 1];
+
+            for (int i = 0; i < v0.Length; i++)
+            {
+                v0[i] = i;
+            }
+
+            for (int i = 0; i < s1.Length; i++)
+            {
+                v1[0] = i + 1;
+
+                for (int j = 0; j < s2.Length; j++)
+                {
+                    int cost = (s1[i] == s2[j]) ? 0 : 1;
+                    v1[j + 1] = Math.Min(Math.Min(v1[j] + 1, v0[j + 1] + 1), v0[j] + cost);
+                }
+
+                for (int j = 0; j < v0.Length; j++)
+                {
+                    v0[j] = v1[j];
+                }
+            }
+
+            return v1[s2.Length];
+        }
     }
 }
