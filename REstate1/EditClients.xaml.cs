@@ -18,6 +18,17 @@ namespace REstate1
         }
         public void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(SurnameTextBox.Text) && string.IsNullOrEmpty(NameTextBox.Text) && string.IsNullOrEmpty(PatronymicTextBox.Text))
+            {
+                MessageBox.Show("Необходимо заполнить хотя бы одно из полей: Фамилия, Имя или Отчество.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(PhoneTextBox.Text) && string.IsNullOrEmpty(EmailTextBox.Text))
+            {
+                MessageBox.Show("Необходимо указать хотя бы одно из полей: Номер телефона или Электронная почта.");
+                return;
+            }
             var editedClient = DataContext as Client;
 
             if (editedClient != null)

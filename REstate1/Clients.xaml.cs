@@ -76,7 +76,19 @@ namespace REstate1
 
         public void CreateClient_Click(object sender, RoutedEventArgs e)
         {
-            using(var context = new RealEstateContext())
+            if (string.IsNullOrEmpty(SurnameTextBox.Text) && string.IsNullOrEmpty(NameTextBox.Text) && string.IsNullOrEmpty(PatronymicTextBox.Text))
+            {
+                MessageBox.Show("Необходимо заполнить хотя бы одно из полей: Фамилия, Имя или Отчество.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(PhoneTextBox.Text) && string.IsNullOrEmpty(EmailTextBox.Text))
+            {
+                MessageBox.Show("Необходимо указать хотя бы одно из полей: Номер телефона или Электронная почта.");
+                return;
+            }
+
+            using (var context = new RealEstateContext())
             {
                 var client = new Client
                 {
@@ -86,6 +98,7 @@ namespace REstate1
                     Phone = PhoneTextBox.Text,
                     Email = EmailTextBox.Text
                 };
+
                 context.Client.Add(client);
                 context.SaveChanges();
                 MessageBox.Show("Клиент успешно создан!");
