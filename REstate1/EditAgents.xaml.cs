@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using REstate1.Data.Entities;
 using REstate1.Data;
+using System.Text.RegularExpressions;
 
 namespace REstate1
 {
@@ -20,6 +21,55 @@ namespace REstate1
 
         private void SaveChanges_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(SurnameTextBox.Text) || string.IsNullOrEmpty(NameTextBox.Text) || string.IsNullOrEmpty(PatronymicTextBox.Text))
+            {
+                MessageBox.Show("Необходимо заполнить ФИО полностью");
+                return;
+            }
+
+            string name = NameTextBox.Text;
+            string surname = SurnameTextBox.Text;
+            string patronymic = PatronymicTextBox.Text;
+
+            Regex regex = new Regex(@"^[А-ЯЁ][а-яё]+$");
+
+            if (!regex.IsMatch(name))
+            {
+                MessageBox.Show("Проверьте корректность имени");
+                return;
+            }
+
+            Regex regex2 = new Regex(@"^[А-ЯЁ][а-яё]{2,}$");
+
+            if (!regex2.IsMatch(surname))
+            {
+                MessageBox.Show("Проверьте корректность фамилии");
+                return;
+            }
+
+            Regex regex3 = new Regex(@"^[А-ЯЁ][а-яё]{3,}$");
+
+            if (!regex3.IsMatch(patronymic))
+            {
+                MessageBox.Show("Проверьте корректность отчества");
+                return;
+            }
+            if (!string.IsNullOrEmpty(DealShareTextBox.Text))
+            {
+                string dealShare = DealShareTextBox.Text;
+
+                if (!int.TryParse(dealShare, out int dealShareValue))
+                {
+                    MessageBox.Show("Доля от комиссии должна быть числом");
+                    return;
+                }
+
+                if (dealShareValue < 0 || dealShareValue > 100)
+                {
+                    MessageBox.Show("Доля от комиссии должна быть числом от 0 до 100");
+                    return;
+                }
+            }
             var editedAgent = DataContext as Agent;
 
             if (editedAgent != null)
