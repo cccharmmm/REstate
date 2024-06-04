@@ -178,10 +178,15 @@
     </ApplicationDefinition>
     <Compile Include="Data\Entities\Agent.cs" />
     <Compile Include="Data\Entities\Apartment.cs" />
+    <Compile Include="Data\Entities\ApartmentDemand.cs" />
     <Compile Include="Data\Entities\Client.cs" />
+    <Compile Include="Data\Entities\Deal.cs" />
+    <Compile Include="Data\Entities\Demand.cs" />
     <Compile Include="Data\Entities\District.cs" />
     <Compile Include="Data\Entities\House.cs" />
+    <Compile Include="Data\Entities\HouseDemand.cs" />
     <Compile Include="Data\Entities\Land.cs" />
+    <Compile Include="Data\Entities\LandDemand.cs" />
     <Compile Include="Data\Entities\RealEstate.cs" />
     <Compile Include="Data\Entities\Supply.cs" />
     <Compile Include="Data\Entities\TypeRealEstate.cs" />
@@ -195,9 +200,9 @@
     <Compile Include="EditClients.xaml.cs">
       <DependentUpon>EditClients.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202406041352331_Initial.cs" />
-    <Compile Include="Migrations\202406041352331_Initial.designer.cs">
-      <DependentUpon>202406041352331_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\202406041720519_Initial.cs" />
+    <Compile Include="Migrations\202406041720519_Initial.designer.cs">
+      <DependentUpon>202406041720519_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RealEstates.xaml.cs">
@@ -274,8 +279,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\202406041352331_Initial.resx">
-      <DependentUpon>202406041352331_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202406041720519_Initial.resx">
+      <DependentUpon>202406041720519_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
