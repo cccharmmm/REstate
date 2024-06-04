@@ -111,8 +111,46 @@ namespace REstate1
             LoadSupplies(null, null);
         }
 
+        private void DeleteSupply(object sender, RoutedEventArgs e)
+        {
 
+            var selectedSup = SuppliesListBox.SelectedItem as Supply;
+            if (selectedSup == null)
+            {
+                MessageBox.Show("Выберите запись для удаления");
+                return;
+            }
+            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данное предложение?", "Подтверждение удаления", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                using (var context = new RealEstateContext())
+                {
+                    var supply = context.Supply.Find(selectedSup.Id);
+                    if (supply != null)
+                    {
+                        context.Supply.Remove(supply);
+                        context.SaveChanges();
+                    }
+                }
+            }
+            LoadSupplies(null, null);
+        }
+        private void EditSupply(object sender, RoutedEventArgs e)
+        {
+            var selectedSupply = SuppliesListBox.SelectedItem as Supply;
 
+            if (selectedSupply == null)
+            {
+                MessageBox.Show("Выберите запись для редактирования");
+                return;
+            }
+
+            var editWindow = new EditSupply(selectedSupply);
+            if (editWindow.ShowDialog() == true)
+            {
+                LoadSupplies(null, null);
+            }
+        }
 
         private void Clients_Click(object sender, RoutedEventArgs e)
         {

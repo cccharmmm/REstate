@@ -212,6 +212,9 @@
     <Compile Include="EditClients.xaml.cs">
       <DependentUpon>EditClients.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditSupply.xaml.cs">
+      <DependentUpon>EditSupply.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202406041944591_Initial.cs" />
     <Compile Include="Migrations\202406041944591_Initial.designer.cs">
       <DependentUpon>202406041944591_Initial.cs</DependentUpon>
@@ -262,6 +265,10 @@
     <Page Include="EditClients.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="EditSupply.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
