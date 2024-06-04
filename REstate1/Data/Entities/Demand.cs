@@ -26,8 +26,8 @@ namespace REstate1.Data.Entities
         public string Address_Street { get; set; }
         public string Address_House { get; set; }
         public string Address_Number { get; set; }
-        public int? MinPrice { get; set; }
-        public int? MaxPrice { get; set; }
+        public long? MinPrice { get; set; }
+        public long? MaxPrice { get; set; }
         [ForeignKey("HouseDemand")]
         public int? Id_HouseDemand { get; set; }
         public virtual HouseDemand HouseDemand { get; set; }

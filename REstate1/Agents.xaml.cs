@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.EntityFrameworkCore;
 
 namespace REstate1
 {
@@ -257,6 +258,34 @@ namespace REstate1
         private void Update_Click(object sender, RoutedEventArgs e)
         {
             UpdateAgentList();
+        }
+        private void showDemand_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedAgent = AgentListBox.SelectedItem as Agent;
+            if (selectedAgent == null)
+            {
+                MessageBox.Show("Выберите риэлтора для отображения его потребностей");
+                return;
+            }
+
+            int agentId = selectedAgent.Id;
+            AgentDemand agentDemandWindow = new AgentDemand(agentId);
+            agentDemandWindow.ShowDialog();
+
+        }
+
+        private void showSupply_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedAgent = AgentListBox.SelectedItem as Agent;
+            if (selectedAgent == null)
+            {
+                MessageBox.Show("Выберите риэлтора для отображения его предложений");
+                return;
+            }
+
+            int agentId = selectedAgent.Id;
+            AgentSupply agentSupplyWindow = new AgentSupply(agentId);
+            agentSupplyWindow.ShowDialog();
         }
     }
 }

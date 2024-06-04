@@ -18,7 +18,7 @@ namespace REstate1.Data.Entities
         [ForeignKey("RealEstate")]
         public int RealEstateId { get; set; }
         public virtual RealEstate RealEstate { get; set; }
-        public double Price { get; set; }
+        public long Price { get; set; }
         public virtual ICollection<Deal> Deals { get; set; }
     }
 
