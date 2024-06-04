@@ -178,10 +178,15 @@
     </ApplicationDefinition>
     <Compile Include="Data\Entities\Agent.cs" />
     <Compile Include="Data\Entities\Apartment.cs" />
+    <Compile Include="Data\Entities\ApartmentDemand.cs" />
     <Compile Include="Data\Entities\Client.cs" />
+    <Compile Include="Data\Entities\Deal.cs" />
+    <Compile Include="Data\Entities\Demand.cs" />
     <Compile Include="Data\Entities\District.cs" />
     <Compile Include="Data\Entities\House.cs" />
+    <Compile Include="Data\Entities\HouseDemand.cs" />
     <Compile Include="Data\Entities\Land.cs" />
+    <Compile Include="Data\Entities\LandDemand.cs" />
     <Compile Include="Data\Entities\RealEstate.cs" />
     <Compile Include="Data\Entities\Supply.cs" />
     <Compile Include="Data\Entities\TypeRealEstate.cs" />

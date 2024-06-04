@@ -11,6 +11,7 @@ namespace REstate1.Data.Entities
         public int Id_type { get; set; }
 
         public string Name { get; set; }
+        public virtual ICollection<Demand> Demands { get; set; }
 
         public ICollection<RealEstate> RealEstates { get; set; }
     }

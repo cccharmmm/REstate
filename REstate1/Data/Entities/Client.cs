@@ -16,5 +16,8 @@ namespace REstate1.Data.Entities
         public string MiddleName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+
+        public virtual ICollection<Demand> Demands { get; set; }
+        public virtual ICollection<Supply> Supplies { get; set; }
     }
 }
