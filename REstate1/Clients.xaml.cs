@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -87,6 +88,68 @@ namespace REstate1
                 MessageBox.Show("Необходимо указать хотя бы одно из полей: Номер телефона или Электронная почта.");
                 return;
             }
+
+            if (!string.IsNullOrEmpty(NameTextBox.Text))
+            {
+                string name = NameTextBox.Text;
+
+                Regex regex = new Regex(@"^[А-ЯЁ][а-яё]+$");
+
+                if (!regex.IsMatch(name))
+                {
+                    MessageBox.Show("Проверьте корректность имени");
+                    return;
+                }
+            }
+            if (!string.IsNullOrEmpty(SurnameTextBox.Text))
+            {
+                string surname = SurnameTextBox.Text;
+
+                Regex regex = new Regex(@"^[А-ЯЁ][а-яё]{2,}$");
+
+                if (!regex.IsMatch(surname))
+                {
+                    MessageBox.Show("Проверьте корректность фамилии");
+                    return;
+                }
+            }
+            if (!string.IsNullOrEmpty(PatronymicTextBox.Text))
+            {
+                string patronymic = PatronymicTextBox.Text;
+
+                Regex regex = new Regex(@"^[А-ЯЁ][а-яё]{3,}$");
+
+                if (!regex.IsMatch(patronymic))
+                {
+                    MessageBox.Show("Проверьте корректность отчества");
+                    return;
+                }
+            }
+            if (!string.IsNullOrEmpty(EmailTextBox.Text))
+            {
+                string email = EmailTextBox.Text;
+
+                Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+
+                if (!emailRegex.IsMatch(email))
+                {
+                    MessageBox.Show("Некорректный формат email");
+                    return;
+                }
+            }
+            if (!string.IsNullOrEmpty(PhoneTextBox.Text))
+            {
+                string phoneNumber = PhoneTextBox.Text;
+
+                Regex phoneRegex = new Regex(@"^\+7\d{10}$");
+
+                if (!phoneRegex.IsMatch(phoneNumber))
+                {
+                    MessageBox.Show("Некорректный формат номера телефона. Введите номер в формате +7XXXXXXXXXX.");
+                    return;
+                }
+            }
+
 
             using (var context = new RealEstateContext())
             {
