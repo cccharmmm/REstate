@@ -47,6 +47,7 @@ namespace REstate1
         private void CancelChanges_Click(object sender, RoutedEventArgs e)
         {
             DataContext = new Client { Id = Client.Id, LastName = Client.LastName, FirstName = Client.FirstName, MiddleName = Client.MiddleName, Phone = Client.Phone, Email = Client.Email };
+            this.Close();
         }
     }
     

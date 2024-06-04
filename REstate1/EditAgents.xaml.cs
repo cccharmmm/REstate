@@ -51,6 +51,7 @@ namespace REstate1
         private void CancelChanges_Click(object sender, RoutedEventArgs e)
         {
             DataContext = new Agent { Id = Agent.Id, LastName = Agent.LastName, FirstName = Agent.FirstName, MiddleName = Agent.MiddleName, DealShare = Agent.DealShare };
+            this.Close();
         }
     }
 }
