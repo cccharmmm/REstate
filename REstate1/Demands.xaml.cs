@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Data.Entity;
 
 namespace REstate1
 {
@@ -22,6 +23,7 @@ namespace REstate1
         public Demands()
         {
             InitializeComponent();
+            Loaded += LoadDemands;
         }
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
@@ -58,21 +60,13 @@ namespace REstate1
             deals.Show();
         }
 
-        private void UpdateDemandsList()
+        private void LoadDemands(object sender, RoutedEventArgs e)
         {
             using (var context = new RealEstateContext())
             {
-                var demands = context.Demands
-                    .Include(d => d.Client)
-                    .Include(d => d.Agent)
-                    .Include(d => d.TypeRealEstate)
-                    .ToList();
-
-                DemandsListBox.ItemsSource = demands;
+                DemandsListBox.ItemsSource = context.Demands.ToList();
             }
         }
-
-
 
         private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
