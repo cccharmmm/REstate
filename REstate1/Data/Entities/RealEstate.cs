@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace REstate1.Data.Entities
@@ -6,6 +7,8 @@ namespace REstate1.Data.Entities
     [Table("RealEstate")]
     public class RealEstate
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Address_City { get; set; }
         public string Address_Street { get; set; }

@@ -157,15 +157,47 @@ namespace REstate1
                     District_Id = selectedDistrict.ID,
                     Id_type = selectedType.Id_type
                 };
+
                 context.RealEstate.Add(estate);
+                context.SaveChanges();
+
+                if (selectedType.Name == "Дом")
+                {
+                    var house = new House
+                    {
+                        Id = estate.Id,
+                        Rooms = int.Parse(RoomsTextBox.Text),
+                        TotalFloors = int.Parse(FloorTextBox.Text),
+                        TotalArea = float.Parse(AreaTextBox.Text)
+                    };
+                    context.House.Add(house);
+                }
+                else if (selectedType.Name == "Квартира")
+                {
+                    var apartment = new Apartment
+                    {
+                        Id = estate.Id,
+                        TotalArea = float.Parse(AreaTextBox.Text),
+                        Floor = int.Parse(FloorTextBox.Text),
+                        Rooms = int.Parse(RoomsTextBox.Text)
+                    };
+                    context.Apartment.Add(apartment);
+                }
+                else if (selectedType.Name == "Земля")
+                {
+                    var land = new Land
+                    {
+                        Id = estate.Id,
+                        TotalArea = float.Parse(AreaTextBox.Text)
+                    };
+                    context.Land.Add(land);
+                }
+
                 context.SaveChanges();
             }
 
             UpdateRealEstatesList();
         }
-
-
-
 
     }
 }

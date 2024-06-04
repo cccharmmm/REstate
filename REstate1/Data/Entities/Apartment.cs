@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace REstate1.Data.Entities
 {
     [Table("Apartment")]
     public class Apartment
     {
+        [Key]
+
         [ForeignKey("RealEstate")]
         public int Id { get; set; }
         public int Floor { get; set; }
