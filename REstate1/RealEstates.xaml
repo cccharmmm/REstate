@@ -243,8 +243,6 @@
             <TextBox x:Name="NumberTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Квартира" MaxLength="5"/>
             <ComboBox x:Name="DistrictComboBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Район"  DisplayMemberPath="Name"/>
             <ComboBox x:Name="TypeComboBox" Margin="0 10 0 10" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Тип объекта недвижимости" SelectionChanged="TypeComboBox_SelectionChanged" DisplayMemberPath="Name"/>
-
-
             <TextBox x:Name="AreaTextBox"  Margin="0 0 0 10"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Площадь" MaxLength="7" Visibility="Collapsed"/>
             <TextBox x:Name="FloorTextBox"  Margin="0 0 0 0"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Этажность" MaxLength="7" Visibility="Collapsed"/>
             <TextBox x:Name="RoomsTextBox"  Margin="0 10 0 10"  Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Количество комнат" MaxLength="7" Visibility="Collapsed"/>
@@ -254,10 +252,10 @@
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,68,40,0" HorizontalAlignment="Right" Height="77" VerticalAlignment="Top">
 
-            <Label x:Name="Label1" Style="{StaticResource ResourceKey=ContentLabelStyle}" Height="37" Content="Фильтрация по" VerticalAlignment="Bottom"/>
-            <ComboBox x:Name="FilterComboBox" Margin="-10 19 10 10" Style="{StaticResource PlaceholderComboBoxStyle}">
-                <ComboBoxItem>адресу</ComboBoxItem>
-                <ComboBoxItem>типу</ComboBoxItem>
+            <Label x:Name="Label1" Style="{StaticResource ResourceKey=ContentLabelStyle}" Height="37" Content="Фильтрация" VerticalAlignment="Bottom"/>
+            <ComboBox x:Name="FilterComboBox" Margin="-10 19 10 10" Style="{StaticResource PlaceholderComboBoxStyle}" SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem>по адресу</ComboBoxItem>
+                <ComboBoxItem>по типу</ComboBoxItem>
             </ComboBox>
             <ComboBox x:Name="AddressComboBox" Margin="0 19 0 10" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Адрес" Width="150" Visibility="Collapsed"/>
             <ComboBox x:Name="Type2ComboBox" Margin="0 19 0 10" Style="{StaticResource PlaceholderComboBoxStyle}" Tag="Тип" Width="100" Visibility="Collapsed">

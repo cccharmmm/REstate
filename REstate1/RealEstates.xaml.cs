@@ -93,14 +93,17 @@ namespace REstate1
             if (FilterComboBox.SelectedItem != null)
             {
                 var selectedFilter = (ComboBoxItem)FilterComboBox.SelectedItem;
-                if (selectedFilter.Content.ToString() == "адресу")
+
+                if (selectedFilter.Content.ToString() == "по адресу")
                 {
+                    Label1.Visibility= Visibility.Collapsed;
                     AddressComboBox.Visibility = Visibility.Visible;
                     Type2ComboBox.Visibility = Visibility.Collapsed;
                     ApplyButton.Visibility = Visibility.Visible;
                 }
-                else if (selectedFilter.Content.ToString() == "типу")
+                else if (selectedFilter.Content.ToString() == "по типу")
                 {
+                    Label1.Visibility = Visibility.Collapsed;
                     AddressComboBox.Visibility = Visibility.Collapsed;
                     Type2ComboBox.Visibility = Visibility.Visible;
                     ApplyButton.Visibility = Visibility.Visible;

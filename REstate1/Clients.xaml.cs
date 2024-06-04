@@ -102,18 +102,23 @@ namespace REstate1
             var selectedClient = ClientListBox.SelectedItem as Client;
             if (selectedClient != null)
             {
-                using(var context = new RealEstateContext())
+                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данного клиента?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                 {
-                    context.Client.Attach(selectedClient);
-                    context.Client.Remove(selectedClient);
-                    context.SaveChanges();
+                    using (var context = new RealEstateContext())
+                    {
+                        context.Client.Attach(selectedClient);
+                        context.Client.Remove(selectedClient);
+                        context.SaveChanges();
+                    }
+
+                    MessageBox.Show("Клиент успешно удален.");
+                    UpdateClientList();
                 }
-                MessageBox.Show("Клиент успешно удален.");
-                UpdateClientList();
             }
             else
             {
-                MessageBox.Show("Выберите агента для удаления.");
+                MessageBox.Show("Выберите клиента для удаления.");
             }
         }
 

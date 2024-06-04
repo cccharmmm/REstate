@@ -76,7 +76,7 @@ namespace REstate1
 
                 context.Agent.Add(agent);
                 context.SaveChanges();
-                MessageBox.Show("Агент успешно создан!");
+                MessageBox.Show("Риэлтор успешно создан!");
                 UpdateAgentList();
             }
         }
@@ -86,15 +86,19 @@ namespace REstate1
             var selectedAgent = AgentListBox.SelectedItem as Agent;
             if (selectedAgent != null)
             {
-                using (var context = new RealEstateContext())
+                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данного риэлтора?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                 {
-                    context.Agent.Attach(selectedAgent);
-                    context.Agent.Remove(selectedAgent);
-                    context.SaveChanges();
-                }
+                    using (var context = new RealEstateContext())
+                    {
+                        context.Agent.Attach(selectedAgent);
+                        context.Agent.Remove(selectedAgent);
+                        context.SaveChanges();
+                    }
 
-                MessageBox.Show("Агент успешно удален.");
-                UpdateAgentList();
+                    MessageBox.Show("Агент успешно удален.");
+                    UpdateAgentList();
+                }
             }
             else
             {
@@ -113,7 +117,7 @@ namespace REstate1
             }
             else
             {
-                MessageBox.Show("Выберите агента для редактирования.");
+                MessageBox.Show("Выберите риэлтора для редактирования.");
             }
         }
     }
