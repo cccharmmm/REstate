@@ -10,7 +10,7 @@ namespace REstate1.Data.Entities
 
         [ForeignKey("RealEstate")]
         public int Id { get; set; }
-        public float TotalArea { get; set; }
+        public float? TotalArea { get; set; }
 
         public RealEstate RealEstate { get; set; }
     }

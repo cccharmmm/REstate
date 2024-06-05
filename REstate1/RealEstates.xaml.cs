@@ -1,8 +1,12 @@
 ﻿using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using REstate1.Data;
 using REstate1.Data.Entities;
+using System.Text.RegularExpressions;
+using System.Data.Entity.Core;
+using System;
 
 namespace REstate1
 {
@@ -140,21 +144,77 @@ namespace REstate1
             var selectedDistrict = DistrictComboBox.SelectedItem as District;
             var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
 
-            if (selectedDistrict == null || selectedType == null)
+            if (selectedType == null)
             {
-                MessageBox.Show("Выберите район и тип объекта недвижимости.");
+                MessageBox.Show("Выберите тип объекта недвижимости.");
                 return;
+            }
+
+            string city1 = CityTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(city1))
+            {
+                if (!Regex.IsMatch(city1, @"^[А-Я][а-я]{3,}$"))
+                {
+                    MessageBox.Show("Введите корректный город");
+                    return;
+                }
+                for (int i = 0; i < city1.Length - 1; i++)
+                {
+                    if (char.ToUpper(city1[i]) == char.ToUpper(city1[i + 1]))
+                    {
+                        MessageBox.Show("Город не может содержать повторяющиеся символы");
+                        return;
+                    }
+                }
+            }
+
+            string street1 = StreetTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(street1))
+            {
+                if (!Regex.IsMatch(street1, @"^[А-Я][а-я]{3,}$"))
+                {
+                    MessageBox.Show("Введите корректное название улицы");
+                    return;
+                }
+                for (int i = 0; i < street1.Length - 1; i++)
+                {
+                    if (char.ToUpper(street1[i]) == char.ToUpper(street1[i + 1]))
+                    {
+                        MessageBox.Show("Улица не может содержать повторяющиеся символы");
+                        return;
+                    }
+                }
+            }
+
+            string house1 = HouseTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(house1))
+            {
+                if (!Regex.IsMatch(house1, @"^\d+$"))
+                {
+                    MessageBox.Show("Введите корректный номер дома (только цифры)");
+                    return;
+                }
+            }
+
+            string apartment1 = NumberTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(apartment1))
+            {
+                if (!Regex.IsMatch(apartment1, @"^\d+$"))
+                {
+                    MessageBox.Show("Введите корректный номер квартиры (только цифры).");
+                    return;
+                }
             }
 
             using (var context = new RealEstateContext())
             {
                 var estate = new RealEstate
                 {
-                    Address_City = CityTextBox.Text,
-                    Address_Street = StreetTextBox.Text,
-                    Address_House = HouseTextBox.Text,
-                    Address_Number = NumberTextBox.Text,
-                    District_Id = selectedDistrict.ID,
+                    Address_City = !string.IsNullOrEmpty(city1) ? city1 : null,
+                    Address_Street = street1,
+                    Address_House = house1,
+                    Address_Number = apartment1,
+                    District_Id = selectedDistrict?.ID,
                     Id_type = selectedType.Id_type
                 };
 
@@ -163,32 +223,89 @@ namespace REstate1
 
                 if (selectedType.Name == "Дом")
                 {
+                    int? rooms = null, totalFloors = null;
+                    if (!string.IsNullOrEmpty(RoomsTextBox.Text) && !string.IsNullOrEmpty(FloorTextBox.Text))
+                    {
+                        if (!int.TryParse(RoomsTextBox.Text, out int roomsValue) || !int.TryParse(FloorTextBox.Text, out int totalFloorsValue))
+                        {
+                            MessageBox.Show("Введите корректные значения для количества комнат и этажей дома.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        rooms = roomsValue;
+                        totalFloors = totalFloorsValue;
+                    }
+
+                    float? totalArea = null;
+                    if (!string.IsNullOrEmpty(AreaTextBox.Text))
+                    {
+                        if (!float.TryParse(AreaTextBox.Text, out float areaValue))
+                        {
+                            MessageBox.Show("Введите корректное значение для площади дома.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        totalArea = areaValue;
+                    }
+
                     var house = new House
                     {
                         Id = estate.Id,
-                        Rooms = int.Parse(RoomsTextBox.Text),
-                        TotalFloors = int.Parse(FloorTextBox.Text),
-                        TotalArea = float.Parse(AreaTextBox.Text)
+                        Rooms = rooms,
+                        TotalFloors = totalFloors,
+                        TotalArea = totalArea
                     };
                     context.House.Add(house);
                 }
                 else if (selectedType.Name == "Квартира")
                 {
+                    int? floor = null, rooms = null;
+                    if (!string.IsNullOrEmpty(FloorTextBox.Text) && !string.IsNullOrEmpty(RoomsTextBox.Text))
+                    {
+                        if (!int.TryParse(FloorTextBox.Text, out int floorValue) || !int.TryParse(RoomsTextBox.Text, out int roomsValue))
+                        {
+                            MessageBox.Show("Введите корректные значения для этажа и количества комнат квартиры.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        floor = floorValue;
+                        rooms = roomsValue;
+                    }
+
+                    float? totalArea = null;
+                    if (!string.IsNullOrEmpty(AreaTextBox.Text))
+                    {
+                        if (!float.TryParse(AreaTextBox.Text, out float areaValue))
+                        {
+                            MessageBox.Show("Введите корректное значение для площади квартиры.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        totalArea = areaValue;
+                    }
+
                     var apartment = new Apartment
                     {
                         Id = estate.Id,
-                        TotalArea = float.Parse(AreaTextBox.Text),
-                        Floor = int.Parse(FloorTextBox.Text),
-                        Rooms = int.Parse(RoomsTextBox.Text)
+                        Floor = floor,
+                        Rooms = rooms,
+                        TotalArea = totalArea
                     };
                     context.Apartment.Add(apartment);
                 }
                 else if (selectedType.Name == "Земля")
                 {
+                    float? totalArea = null;
+                    if (!string.IsNullOrEmpty(AreaTextBox.Text))
+                    {
+                        if (!float.TryParse(AreaTextBox.Text, out float areaValue))
+                        {
+                            MessageBox.Show("Введите корректное значение для площади земли.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        totalArea = areaValue;
+                    }
+
                     var land = new Land
                     {
                         Id = estate.Id,
-                        TotalArea = float.Parse(AreaTextBox.Text)
+                        TotalArea = totalArea
                     };
                     context.Land.Add(land);
                 }
@@ -197,6 +314,7 @@ namespace REstate1
             }
 
             UpdateRealEstatesList();
+            MessageBox.Show("Объект недвижимости успешно создан");
         }
         private void UpdateEstateList()
         {
@@ -220,37 +338,49 @@ namespace REstate1
                 {
                     using (var context = new RealEstateContext())
                     {
+                        try
+                        {
+                            // Удаляем записи из смежных таблиц
+                            var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
+                            if (houseToRemove != null)
+                            {
+                                context.House.Remove(houseToRemove);
+                            }
 
-                        var dealsToRemove = context.Deals.Where(d => d.Supply.RealEstate.Id == selectedEstate.Id).ToList();
-                        context.Deals.RemoveRange(dealsToRemove);
-                        // Находим и удаляем связанные записи из таблиц House, Apartment и Land
-                        var houseToRemove = context.House.FirstOrDefault(h => h.Id == selectedEstate.Id);
-                        if (houseToRemove != null)
-                            context.House.Remove(houseToRemove);
+                            var apartmentToRemove = context.Apartment.FirstOrDefault(a => a.Id == selectedEstate.Id);
+                            if (apartmentToRemove != null)
+                            {
+                                context.Apartment.Remove(apartmentToRemove);
+                            }
 
-                        var apartmentToRemove = context.Apartment.FirstOrDefault(a => a.Id == selectedEstate.Id);
-                        if (apartmentToRemove != null)
-                            context.Apartment.Remove(apartmentToRemove);
+                            var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
+                            if (landToRemove != null)
+                            {
+                                context.Land.Remove(landToRemove);
+                            }
 
-                        var landToRemove = context.Land.FirstOrDefault(l => l.Id == selectedEstate.Id);
-                        if (landToRemove != null)
-                            context.Land.Remove(landToRemove);
+                            // Удаляем запись из таблицы RealEstate
+                            context.RealEstate.Remove(selectedEstate);
 
+                            context.SaveChanges(); // Сохраняем все изменения в базе данных
 
-                        // Удаляем недвижимость
-                        context.RealEstate.Attach(selectedEstate);
-                        context.RealEstate.Remove(selectedEstate);
-                        context.SaveChanges();
+                            MessageBox.Show("Недвижимость успешно удалена.");
+                            UpdateEstateList(); // Обновляем список недвижимости после удаления
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Произошла ошибка при удалении недвижимости: {ex.Message}");
+                        }
                     }
-                    MessageBox.Show("Недвижимость успешно удалена.");
-                    UpdateEstateList();
                 }
             }
             else
             {
                 MessageBox.Show("Выберите недвижимость для удаления.");
             }
+
         }
+
 
 
     }
