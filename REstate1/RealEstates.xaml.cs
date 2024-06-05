@@ -21,6 +21,7 @@ namespace REstate1
             LoadRealEstateTypes();
             LoadRealEstateTypes2();
             LoadDistricts();
+            LoadAddressComboBox();
         }
 
         private void Clients_Click(object sender, RoutedEventArgs e)
@@ -70,7 +71,14 @@ namespace REstate1
                 EstatesListBox.ItemsSource = context.RealEstate.ToList();
             }
         }
-
+        private void LoadAddressComboBox()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var addresses = context.RealEstate.Select(estate => estate.Address_City + " " + estate.Address_Street).Distinct().ToList();
+                AddressComboBox.ItemsSource = addresses;
+            }
+        }
         private void TypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
@@ -124,20 +132,7 @@ namespace REstate1
             }
         }
 
-        private int GetTypeFromText(string typeText)
-        {
-            switch (typeText)
-            {
-                case "Квартира":
-                    return 1;
-                case "Дом":
-                    return 2;
-                case "Земля":
-                    return 3;
-                default:
-                    return -1; 
-            }
-        }
+     
         private void ApplyButton_Click(object sender, RoutedEventArgs e)
         {
             if (FilterComboBox.SelectedItem != null)
@@ -167,31 +162,32 @@ namespace REstate1
                 }
                 else if (selectedFilter == "по адресу")
                 {
-                    // Ваш код фильтрации по адресу здесь
-                    // Пример:
-                    // string selectedAddress = AddressComboBox.SelectedItem.ToString();
-                    // if (!string.IsNullOrEmpty(selectedAddress))
-                    // {
-                    //     using (var context = new RealEstateContext())
-                    //     {
-                    //         var filteredEstates = context.RealEstate
-                    //             .Where(estate => estate.Address_City.Contains(selectedAddress) || estate.Address_Street.Contains(selectedAddress))
-                    //             .ToList();
+                    string selectedAddress = AddressComboBox.SelectedItem?.ToString();
+                    if (!string.IsNullOrEmpty(selectedAddress))
+                    {
+                        string[] parts = selectedAddress.Split(' '); // Разделение города и улицы
+                        string selectedCity = parts[0];
+                        string selectedStreet = parts[1];
 
-                    //         EstatesListBox.ItemsSource = filteredEstates;
-                    //     }
-                    // }
-                    // else
-                    // {
-                    //     MessageBox.Show("Пожалуйста, выберите адрес перед выполнением поиска.");
-                    // }
+                        using (var context = new RealEstateContext())
+                        {
+                            var filteredEstates = context.RealEstate
+                                .Where(estate => estate.Address_City.Contains(selectedCity) && estate.Address_Street.Contains(selectedStreet))
+                                .ToList();
+
+                            EstatesListBox.ItemsSource = filteredEstates;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Пожалуйста, выберите адрес перед выполнением поиска.");
+                    }
                 }
                 else
                 {
                     MessageBox.Show("Выбран неизвестный тип фильтрации.");
                 }
             }
-
         }
 
         private void LoadRealEstateTypes()

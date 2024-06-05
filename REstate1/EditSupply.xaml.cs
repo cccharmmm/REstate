@@ -1,114 +1,149 @@
-﻿using REstate1.Data.Entities;
+﻿using System;
 using System.Linq;
 using System.Windows;
+using REstate1.Data.Entities;
 
 namespace REstate1
 {
-    /// <summary>
-    /// Логика взаимодействия для EditSupply.xaml
-    /// </summary>
     public partial class EditSupply : Window
     {
-        public EditSupply()
-        {
-            InitializeComponent();
-            LoadClients();
-            LoadAgents();
-            LoadEstates();
-        }
+        private Supply _supply;
 
-        private Supply _supply; 
-
-        public EditSupply(Supply supply) // для передачи supply
+        public EditSupply(Supply supply = null)
         {
             InitializeComponent();
             _supply = supply;
-
-            LoadClients();
-            LoadAgents();
-            LoadEstates();
-            LoadSupplyDetails(); 
+            LoadData();
         }
 
-        private void LoadClients()
+        private void LoadData()
         {
             using (var context = new RealEstateContext())
             {
-                var clients = context.Client.ToList();
-                ClientComboBox.ItemsSource = clients;
+                // Загрузка клиентов, агентов и типов недвижимости
+                LoadClients(context);
+                LoadAgents(context);
+                LoadRealEstates(context);
+
+                // Заполнение полей, если есть предложение
+                if (_supply != null)
+                {
+                    ClientComboBox.SelectedValue = _supply.ClientId;
+                    AgentComboBox.SelectedValue = _supply.AgentId;
+                    RealEstateComboBox.SelectedValue = _supply.RealEstateId;
+                    PriceTextBox.Text = _supply.Price.ToString();
+                }
             }
         }
 
-        private void LoadAgents()
+        private void LoadClients(RealEstateContext context)
         {
-            using (var context = new RealEstateContext())
-            {
-                var agents = context.Agent.ToList();
-                AgentComboBox.ItemsSource = agents;
-            }
+            var clients = context.Client.ToList();
+            ClientComboBox.ItemsSource = clients;
+            ClientComboBox.DisplayMemberPath = "LastName";
+            ClientComboBox.SelectedValuePath = "Id";
         }
 
-
-        private void LoadEstates()
+        private void LoadAgents(RealEstateContext context)
         {
-            using (var context = new RealEstateContext())
-            {
-                var estates = context.RealEstate
-                    .Select(r => new
-                    {
-                        r.Id,
-                        Address = r.Address_City + ", " + r.Address_Street + " " + r.Address_House
-                    })
-                    .ToList();
-
-                RealEstateComboBox.ItemsSource = estates;
-                RealEstateComboBox.DisplayMemberPath = "Address";
-                RealEstateComboBox.SelectedValuePath = "Id";
-            }
+            var agents = context.Agent.ToList();
+            AgentComboBox.ItemsSource = agents;
+            AgentComboBox.DisplayMemberPath = "LastName";
+            AgentComboBox.SelectedValuePath = "Id";
         }
 
-        private void LoadSupplyDetails()
+        private void LoadRealEstates(RealEstateContext context)
         {
-            ClientComboBox.SelectedValue = _supply.ClientId;
-            AgentComboBox.SelectedValue = _supply.AgentId;
-            RealEstateComboBox.SelectedValue = _supply.RealEstateId;
-            PriceTextBox.Text = _supply.Price.ToString();
+            var realEstates = context.RealEstate
+                .Select(r => new
+                {
+                    r.Id,
+                    Address = r.Address_City + ", " + r.Address_Street + " " + r.Address_House
+                })
+                .ToList();
+
+            RealEstateComboBox.ItemsSource = realEstates;
+            RealEstateComboBox.DisplayMemberPath = "Address";
+            RealEstateComboBox.SelectedValuePath = "Id";
         }
 
         private void SaveSupply(object sender, RoutedEventArgs e)
         {
-            var selectedClient = ClientComboBox.SelectedItem as Client;
-            var selectedAgent = AgentComboBox.SelectedItem as Agent;
-            var selectedEstateId = (int?)RealEstateComboBox.SelectedValue;
-
-            if (selectedClient == null || selectedAgent == null || selectedEstateId == null)
+            try
             {
-                MessageBox.Show("Выберите все поля");
-                return;
-            }
+                var selectedClientId = (int)ClientComboBox.SelectedValue;
+                var selectedAgentId = (int)AgentComboBox.SelectedValue;
+                var selectedRealEstateId = (int)RealEstateComboBox.SelectedValue;
 
-            using (var context = new RealEstateContext())
-            {
-                var supply = context.Supply.Find(_supply.Id);
-                if (supply != null)
+                if (selectedClientId == 0 || selectedAgentId == 0 || selectedRealEstateId == 0)
                 {
-                    supply.ClientId = selectedClient.Id;
-                    supply.AgentId = selectedAgent.Id;
-                    supply.RealEstateId = selectedEstateId.Value;
-                    supply.Price = long.Parse(PriceTextBox.Text);
+                    MessageBox.Show("Выберите все поля");
+                    return;
+                }
+
+                if (!ValidatePrice(PriceTextBox.Text))
+                {
+                    MessageBox.Show("Введите корректную цену");
+                    return;
+                }
+
+                using (var context = new RealEstateContext())
+                {
+                    if (_supply != null)
+                    {
+                        var supply = context.Supply.Find(_supply.Id);
+                        if (supply != null)
+                        {
+                            supply.ClientId = selectedClientId;
+                            supply.AgentId = selectedAgentId;
+                            supply.RealEstateId = selectedRealEstateId;
+                            supply.Price = long.Parse(PriceTextBox.Text);
+                        }
+                    }
+                    else
+                    {
+                        var newSupply = new Supply
+                        {
+                            ClientId = selectedClientId,
+                            AgentId = selectedAgentId,
+                            RealEstateId = selectedRealEstateId,
+                            Price = long.Parse(PriceTextBox.Text)
+                        };
+                        context.Supply.Add(newSupply);
+                    }
 
                     context.SaveChanges();
                 }
-            }
 
-            DialogResult = true;
-            Close();
+                DialogResult = true;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Произошла ошибка: " + ex.Message);
+            }
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
             Close();
+        }
+
+        private bool ValidatePrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+                return false;
+
+            return long.TryParse(price, out _);
+        }
+
+        private void PriceTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, 0))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

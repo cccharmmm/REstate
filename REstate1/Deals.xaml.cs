@@ -60,53 +60,7 @@ namespace REstate1
             LoadData(null, null);
         }
 
-        private void EditDeal_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (DealsListBox.SelectedItem is Deal selectedDeal)
-                {
-                    if (SupplyComboBox.SelectedItem == null || DemandComboBox.SelectedItem == null)
-                    {
-                        MessageBox.Show("Подтвердите выбор предложения и потребности.");
-                        return;
-                    }
-
-                    int selectedSupplyId = (int)SupplyComboBox.SelectedItem;
-                    int selectedDemandId = (int)DemandComboBox.SelectedItem;
-
-                    using (var context = new RealEstateContext())
-                    {
-                        var deal = context.Deals
-                            .FirstOrDefault(d => d.Supply_Id == selectedDeal.Supply_Id && d.Demand_Id == selectedDeal.Demand_Id);
-
-                        if (deal != null)
-                        {
-                            deal.Supply_Id = selectedSupplyId;
-                            deal.Demand_Id = selectedDemandId;
-                            context.SaveChanges();
-                            MessageBox.Show("Успешно обновлено.");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Выбранный элемент не найден.");
-                        }
-                    }
-
-                    LoadData(null, null);
-                }
-                else
-                {
-                    MessageBox.Show("Выберите сделку для редактирования.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Deal занят. Попробуйте еще раз позже.");
-            }
-        }
-
-
+        
 
         private void DeleteDeal_Click(object sender, RoutedEventArgs e)
         {
@@ -121,7 +75,7 @@ namespace REstate1
                     {
                         context.Deals.Remove(deal);
                         context.SaveChanges();
-                        MessageBox.Show("Deal deleted successfully.");
+                        MessageBox.Show("Сделка успешно удалена");
                     }
                     else
                     {

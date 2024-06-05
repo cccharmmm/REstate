@@ -3,7 +3,9 @@ using REstate1.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +19,7 @@ using System.Windows.Shapes;
 namespace REstate1
 {
     /// <summary>
-    /// Логика взаимодействия для Supplies.xaml
+    /// Interaction logic for Supplies.xaml
     /// </summary>
     public partial class Supplies : Window
     {
@@ -25,61 +27,54 @@ namespace REstate1
         {
             InitializeComponent();
             Loaded += LoadSupplies;
-            LoadClients();
-            LoadAgents();
-            LoadEstates();
+            
         }
 
         private void LoadSupplies(object sender, RoutedEventArgs e)
         {
             using (var context = new RealEstateContext())
             {
+                // Загрузка предложений и связанных с ними данных
                 var supplies = context.Supply
                     .Include("Client")
                     .Include("Agent")
                     .ToList();
 
                 SuppliesListBox.ItemsSource = supplies;
+
+                // Загрузка клиентов, агентов и недвижимости
+                LoadClients(context);
+                LoadAgents(context);
+                LoadEstates(context);
             }
         }
 
-
-        private void LoadClients()
+        private void LoadClients(RealEstateContext context)
         {
-            using (var context = new RealEstateContext())
-            {
-                var types = context.Client.ToList();
-                ClientComboBox.ItemsSource = types;
-            }
+            var clients = context.Client.ToList();
+            ClientComboBox.ItemsSource = clients;
         }
 
-        private void LoadAgents()
+        private void LoadAgents(RealEstateContext context)
         {
-            using (var context = new RealEstateContext())
-            {
-                var types = context.Agent.ToList();
-                AgentComboBox.ItemsSource = types;
-            }
+            var agents = context.Agent.ToList();
+            AgentComboBox.ItemsSource = agents;
         }
 
-        private void LoadEstates()
+        private void LoadEstates(RealEstateContext context)
         {
-            using (var context = new RealEstateContext())
-            {
-                var types = context.RealEstate
-                                   .Select(r => new
-                                   {
-                                       r.Id,
-                                       Address = r.Address_City + ", " + r.Address_Street + " " + r.Address_House
-                                   })
-                                   .ToList();
+            var estates = context.RealEstate
+                .Select(r => new
+                {
+                    r.Id,
+                    Address = r.Address_City + ", " + r.Address_Street + " " + r.Address_House
+                })
+                .ToList();
 
-                RealEstateComboBox.ItemsSource = types;
-                RealEstateComboBox.DisplayMemberPath = "Address";
-                RealEstateComboBox.SelectedValuePath = "Id";
-            }
+            RealEstateComboBox.ItemsSource = estates;
+            RealEstateComboBox.DisplayMemberPath = "Address";
+            RealEstateComboBox.SelectedValuePath = "Id";
         }
-
 
         private void CreateSupply(object sender, RoutedEventArgs e)
         {
@@ -90,6 +85,13 @@ namespace REstate1
             if (selectedClient == null || selectedAgent == null || selectedEstateId == null)
             {
                 MessageBox.Show("Выберите все поля");
+                return;
+            }
+
+            // Проверка на корректность введенных данных в текстовых полях
+            if (!ValidatePrice(PriceTextBox.Text))
+            {
+                MessageBox.Show("Введите корректную цену");
                 return;
             }
 
@@ -155,20 +157,26 @@ namespace REstate1
 
         private void EditSupply(object sender, RoutedEventArgs e)
         {
-            var selectedSupply = SuppliesListBox.SelectedItem as Supply;
-
-            if (selectedSupply == null)
+            try
             {
-                MessageBox.Show("Выберите запись для редактирования");
-                return;
+                var selectedSupply = SuppliesListBox.SelectedItem as Supply;
+                if (selectedSupply != null)
+                {
+                    EditSupply editSupplyWindow = new EditSupply(selectedSupply);
+                    editSupplyWindow.ShowDialog();
+                    LoadSupplies(null, null);
+                }
+                else
+                {
+                    MessageBox.Show("Выберите предложение для редактирования.");
+                }
             }
-
-            var editWindow = new EditSupply(selectedSupply);
-            if (editWindow.ShowDialog() == true)
+            catch (Exception ex)
             {
-                LoadSupplies(null, null);
+                MessageBox.Show("Произошла ошибка: " + ex.Message);
             }
         }
+
 
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
@@ -197,6 +205,7 @@ namespace REstate1
             this.Close();
             demands.Show();
         }
+
         private void RefreshSupplies_Click(object sender, RoutedEventArgs e)
         {
             LoadSupplies(sender, e);
@@ -206,11 +215,9 @@ namespace REstate1
         {
             if (!char.IsDigit(e.Text, 0))
             {
-                e.Handled = true; 
+                e.Handled = true;
             }
         }
-
-
 
         private void ClearForm()
         {
@@ -220,6 +227,13 @@ namespace REstate1
             PriceTextBox.Clear();
         }
 
+        private bool ValidatePrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+                return false;
+
+            return long.TryParse(price, out _);
+        }
 
         private void Deals_Click(object sender, RoutedEventArgs e)
         {

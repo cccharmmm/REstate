@@ -5,45 +5,119 @@ using System.Data.Entity;
 using REstate1.Data.Entities;
 using System.Globalization;
 using System.Windows.Controls;
+using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace REstate1
 {
     public partial class EditDemand : Window
     {
         private Demand demand;
+        private int agentId;
+        private int clientId;
+        private int typeRealEstateId;
 
-        public EditDemand(Demand demand)
+        public Demand Demand
+        {
+            get { return demand; }
+            set { demand = value; }
+        }
+
+        public EditDemand(Demand demand, int agentId, int clientId, int typeRealEstateId)
         {
             InitializeComponent();
             this.demand = demand;
-            InitializeFields(); 
+            this.agentId = agentId;
+            this.clientId = clientId;
+            this.typeRealEstateId = typeRealEstateId;
+            LoadData();
+        }
+
+        private void LoadData()
+        {
             LoadClients();
             LoadAgents();
             LoadTypes();
-        }
 
-        private void InitializeFields()
-        {
-            ClientComboBox.SelectedItem = demand.Client;
-            AgentComboBox.SelectedItem = demand.Agent;
-            TypeComboBox.SelectedItem = demand.TypeRealEstate;
-            CityTextBox.Text = demand.Address_City;
-            StreetTextBox.Text = demand.Address_Street;
-            HouseTextBox.Text = demand.Address_House;
+            using (var context = new RealEstateContext())
+            {
+                var agent = context.Agent.FirstOrDefault(a => a.Id == agentId);
+                var client = context.Client.FirstOrDefault(c => c.Id == clientId);
+                var typeRealEstate = context.TypeRealEstate.FirstOrDefault(t => t.Id_type == typeRealEstateId);
+
+                if (agent != null)
+                    AgentComboBox.SelectedValue = agent.Id;
+                if (client != null)
+                    ClientComboBox.SelectedValue = client.Id;
+                if (typeRealEstate != null)
+                    TypeComboBox.SelectedValue = typeRealEstate.Id_type;
+
+                if (demand != null)
+                {
+                    CityTextBox.Text = demand.Address_City;
+                    StreetTextBox.Text = demand.Address_Street;
+                    HouseTextBox.Text = demand.Address_House;
+                }
+            }
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var selectedClient = ClientComboBox.SelectedItem as Client;
-            var selectedAgent = AgentComboBox.SelectedItem as Agent;
-            var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
+            var selectedAgentId = (int)AgentComboBox.SelectedValue;
+            var selectedClientId = (int)ClientComboBox.SelectedValue;
+            var selectedTypeId = (int)TypeComboBox.SelectedValue;
 
-            if (selectedClient == null || selectedAgent == null || selectedType == null ||
-                string.IsNullOrEmpty(CityTextBox.Text) || string.IsNullOrEmpty(StreetTextBox.Text) ||
-                string.IsNullOrEmpty(HouseTextBox.Text))
+            if (selectedAgentId == 0 || selectedClientId == 0 || selectedTypeId == 0)
             {
-                MessageBox.Show("Please fill in all fields.");
+                MessageBox.Show("Пожалуйста, выберите риэлтора, агента и тип недвижимости.");
                 return;
+            }
+
+            // Проверка на корректность введенных данных в текстовых полях
+            string city = CityTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(city))
+            {
+                if (!Regex.IsMatch(city, @"^[А-Я][а-я]{3,}$"))
+                {
+                    MessageBox.Show("Введите корректный город");
+                    return;
+                }
+                for (int i = 0; i < city.Length - 1; i++)
+                {
+                    if (char.ToUpper(city[i]) == char.ToUpper(city[i + 1]))
+                    {
+                        MessageBox.Show("Город не может содержать повторяющиеся символы");
+                        return;
+                    }
+                }
+            }
+
+            string street = StreetTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(street))
+            {
+                if (!Regex.IsMatch(street, @"^[А-Я][а-я]{3,}$"))
+                {
+                    MessageBox.Show("Введите корректное название улицы");
+                    return;
+                }
+                for (int i = 0; i < street.Length - 1; i++)
+                {
+                    if (char.ToUpper(street[i]) == char.ToUpper(street[i + 1]))
+                    {
+                        MessageBox.Show("Улица не может содержать повторяющиеся символы");
+                        return;
+                    }
+                }
+            }
+
+            string house = HouseTextBox.Text.Trim();
+            if (!string.IsNullOrEmpty(house))
+            {
+                if (!Regex.IsMatch(house, @"^\d+$"))
+                {
+                    MessageBox.Show("Введите корректный номер дома (только цифры)");
+                    return;
+                }
             }
 
             try
@@ -52,29 +126,25 @@ namespace REstate1
                 {
                     if (demand != null)
                     {
-                        // Обновляем существующую запись
-                        demand.ClientId = selectedClient.Id;
-                        demand.AgentId = selectedAgent.Id;
-                        demand.Id_type = selectedType.Id_type;
-                        demand.Address_City = CityTextBox.Text;
-                        demand.Address_Street = StreetTextBox.Text;
-                        demand.Address_House = HouseTextBox.Text;
-
+                        demand.ClientId = selectedClientId;
+                        demand.AgentId = selectedAgentId;
+                        demand.Id_type = selectedTypeId;
+                        demand.Address_City = city;
+                        demand.Address_Street = street;
+                        demand.Address_House = house;
                         context.Entry(demand).State = EntityState.Modified;
                     }
                     else
                     {
-                        // Создаем новую запись
                         demand = new Demand
                         {
-                            ClientId = selectedClient.Id,
-                            AgentId = selectedAgent.Id,
-                            Id_type = selectedType.Id_type,
-                            Address_City = CityTextBox.Text,
-                            Address_Street = StreetTextBox.Text,
-                            Address_House = HouseTextBox.Text
+                            ClientId = selectedClientId,
+                            AgentId = selectedAgentId,
+                            Id_type = selectedTypeId,
+                            Address_City = city,
+                            Address_Street = street,
+                            Address_House = house
                         };
-
                         context.Demands.Add(demand);
                     }
 
@@ -86,14 +156,9 @@ namespace REstate1
             }
             catch (Exception ex)
             {
-                MessageBox.Show("О как!");
-                this.Close();
-
-                Console.WriteLine(ex.Message);
+                MessageBox.Show("Произошла ошибка: " + ex.Message);
             }
         }
-
-
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -106,6 +171,8 @@ namespace REstate1
             {
                 var clients = context.Client.ToList();
                 ClientComboBox.ItemsSource = clients;
+                ClientComboBox.DisplayMemberPath = "LastName";
+                ClientComboBox.SelectedValuePath = "Id";
             }
         }
 
@@ -115,6 +182,8 @@ namespace REstate1
             {
                 var agents = context.Agent.ToList();
                 AgentComboBox.ItemsSource = agents;
+                AgentComboBox.DisplayMemberPath = "LastName";
+                AgentComboBox.SelectedValuePath = "Id";
             }
         }
 
@@ -124,6 +193,8 @@ namespace REstate1
             {
                 var types = context.TypeRealEstate.ToList();
                 TypeComboBox.ItemsSource = types;
+                TypeComboBox.DisplayMemberPath = "Name";
+                TypeComboBox.SelectedValuePath = "Id_type";
             }
         }
     }
