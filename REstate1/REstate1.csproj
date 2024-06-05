@@ -212,8 +212,8 @@
     <Compile Include="EditClients.xaml.cs">
       <DependentUpon>EditClients.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EditRealEstate.xaml.cs">
-      <DependentUpon>EditRealEstate.xaml</DependentUpon>
+    <Compile Include="EditDemand.xaml.cs">
+      <DependentUpon>EditDemand.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditSupply.xaml.cs">
       <DependentUpon>EditSupply.xaml</DependentUpon>
@@ -269,7 +269,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="EditRealEstate.xaml">
+    <Page Include="EditDemand.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

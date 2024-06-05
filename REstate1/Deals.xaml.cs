@@ -1,62 +1,175 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using REstate1.Data.Entities;
+using System.Data.Entity;
 
 namespace REstate1
 {
-    /// <summary>
-    /// Логика взаимодействия для Deals.xaml
-    /// </summary>
     public partial class Deals : Window
     {
         public Deals()
         {
             InitializeComponent();
+            Loaded += LoadData;
+            LoadComboBoxData();
         }
+
+        private void LoadData(object sender, RoutedEventArgs e)
+        {
+            using (var context = new RealEstateContext())
+            {
+                var deals = context.Deals
+                    .Include(d => d.Demand)
+                    .Include(d => d.Supply)
+                    .ToList();
+
+                DealsListBox.ItemsSource = deals;
+            }
+        }
+
+        private void LoadComboBoxData()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var supplyIds = context.Supply.Select(s => s.Id).Distinct().ToList();
+                var demandIds = context.Demands.Select(d => d.Id).Distinct().ToList();
+
+                SupplyComboBox.ItemsSource = supplyIds;
+                DemandComboBox.ItemsSource = demandIds;
+            }
+        }
+
+        private void SaveDeal_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedSupplyId = (int)SupplyComboBox.SelectedItem;
+            int selectedDemandId = (int)DemandComboBox.SelectedItem;
+
+            var newDeal = new Deal
+            {
+                Supply_Id = selectedSupplyId,
+                Demand_Id = selectedDemandId
+            };
+
+            using (var context = new RealEstateContext())
+            {
+                context.Deals.Add(newDeal);
+                context.SaveChanges();
+            }
+
+            LoadData(null, null);
+        }
+
+        private void EditDeal_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (DealsListBox.SelectedItem is Deal selectedDeal)
+                {
+                    if (SupplyComboBox.SelectedItem == null || DemandComboBox.SelectedItem == null)
+                    {
+                        MessageBox.Show("Подтвердите выбор предложения и потребности.");
+                        return;
+                    }
+
+                    int selectedSupplyId = (int)SupplyComboBox.SelectedItem;
+                    int selectedDemandId = (int)DemandComboBox.SelectedItem;
+
+                    using (var context = new RealEstateContext())
+                    {
+                        var deal = context.Deals
+                            .FirstOrDefault(d => d.Supply_Id == selectedDeal.Supply_Id && d.Demand_Id == selectedDeal.Demand_Id);
+
+                        if (deal != null)
+                        {
+                            deal.Supply_Id = selectedSupplyId;
+                            deal.Demand_Id = selectedDemandId;
+                            context.SaveChanges();
+                            MessageBox.Show("Успешно обновлено.");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Выбранный элемент не найден.");
+                        }
+                    }
+
+                    LoadData(null, null);
+                }
+                else
+                {
+                    MessageBox.Show("Выберите сделку для редактирования.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Deal занят. Попробуйте еще раз позже.");
+            }
+        }
+
+
+
+        private void DeleteDeal_Click(object sender, RoutedEventArgs e)
+        {
+            if (DealsListBox.SelectedItem is Deal selectedDeal)
+            {
+                using (var context = new RealEstateContext())
+                {
+                    var deal = context.Deals
+                        .FirstOrDefault(d => d.Supply_Id == selectedDeal.Supply_Id && d.Demand_Id == selectedDeal.Demand_Id);
+
+                    if (deal != null)
+                    {
+                        context.Deals.Remove(deal);
+                        context.SaveChanges();
+                        MessageBox.Show("Deal deleted successfully.");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Selected deal not found in the database.");
+                    }
+                }
+
+                LoadData(null, null);
+            }
+            else
+            {
+                MessageBox.Show("Осуществите выбор сделки");
+            }
+        }
+
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
             Clients clients = new Clients();
-            this.Close();
+            Close();
             clients.Show();
         }
 
         private void Agents_Click(object sender, RoutedEventArgs e)
         {
             Agents agents = new Agents();
-            this.Close();
+            Close();
             agents.Show();
         }
 
         private void RealEstates_Click(object sender, RoutedEventArgs e)
         {
             RealEstates realEstates = new RealEstates();
-            this.Close();
+            Close();
             realEstates.Show();
         }
 
         private void Supplies_Click(object sender, RoutedEventArgs e)
         {
             Supplies supplies = new Supplies();
-            this.Close();
+            Close();
             supplies.Show();
         }
 
         private void Demands_Click(object sender, RoutedEventArgs e)
         {
             Demands demands = new Demands();
-            this.Close();
+            Close();
             demands.Show();
         }
-
     }
 }

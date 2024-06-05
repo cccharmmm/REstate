@@ -5,6 +5,7 @@ using REstate1.Data.Entities;
 using System.Globalization;
 using System.Windows.Controls;
 using static System.Windows.Forms.AxHost;
+using System.Runtime.Remoting.Contexts;
 
 namespace REstate1
 {
@@ -96,6 +97,7 @@ namespace REstate1
 
         private void CreateDemand(object sender, RoutedEventArgs e)
         {
+            Demand demand = null;
             var selectedClient = ClientComboBox.SelectedItem as Client;
             var selectedAgent = AgentComboBox.SelectedItem as Agent;
             var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
@@ -104,23 +106,26 @@ namespace REstate1
                 MessageBox.Show("Выберите все поля");
                 return;
             }
+
             using (var context = new RealEstateContext())
             {
-                var demand = new Demand
+                if (context.Agent.Any(agent => agent.Id == selectedAgent.Id))
                 {
-                    ClientId = selectedClient.Id,
-                    AgentId = selectedAgent.Id,
-                    Id_type = selectedType.Id_type,
-                    Address_City = CityTextBox.Text,
-                    Address_Street = StreetTextBox.Text,
-                    Address_House = HouseTextBox.Text,
-                    Address_Number = NumberTextBox.Text,
-                    MinPrice = int.Parse(MinPriceTextBox.Text),
-                    MaxPrice = int.Parse(MaxPriceTextBox.Text)
-                };
-                context.Demands.Add(demand);
-                context.SaveChanges();
-
+                    var demandd = new Demand
+                    {
+                        ClientId = selectedClient.Id,
+                        AgentId = selectedAgent.Id,
+                        Id_type = selectedType.Id_type,
+                        Address_City = CityTextBox.Text,
+                        Address_Street = StreetTextBox.Text,
+                        Address_House = HouseTextBox.Text,
+                        Address_Number = NumberTextBox.Text,
+                        MinPrice = int.Parse(MinPriceTextBox.Text),
+                        MaxPrice = int.Parse(MaxPriceTextBox.Text)
+                    };
+                    context.Demands.Add(demandd);
+                    context.SaveChanges();
+                }
                 if (selectedType.Name == "Дом")
                 {
                     var house = new HouseDemand
@@ -193,13 +198,72 @@ namespace REstate1
                 MinFloorTextBox.Visibility = Visibility.Collapsed;
                 MaxFloorTextBox.Visibility = Visibility.Collapsed;
             }
-
         }
-    } 
+
+        private void EditDemand(object sender, RoutedEventArgs e)
+        {
+            Demand selectedDemand = DemandsListBox.SelectedItem as Demand;
+            if (selectedDemand != null)
+            {
+                EditDemand editDemandWindow = new EditDemand(selectedDemand);
+                editDemandWindow.ShowDialog();
+                LoadDemands(null, null);
+            }
+            else
+            {
+                MessageBox.Show("Выберите запись для редактирования.");
+            }
+        }
 
 
-        
-        public class RequiredFieldValidationRule : ValidationRule
+        private void DeleteDemand(object sender, RoutedEventArgs e)
+        {
+            var selectedDemand = DemandsListBox.SelectedItem as Demand;
+
+            if (selectedDemand == null)
+            {
+                MessageBox.Show("Выберите запись для удаления.");
+                return;
+            }
+
+            using (var context = new RealEstateContext())
+            {
+                var existingDemand = context.Demands.Find(selectedDemand.Id); // Проверяем существование объекта в контексте
+                if (existingDemand != null)
+                {
+                    bool isLinkedToDeal = IsDemandLinkedToDeal(selectedDemand);
+
+                    if (!isLinkedToDeal)
+                    {
+                        context.Demands.Remove(existingDemand); // Удаляем объект из контекста
+                        context.SaveChanges();
+                        LoadDemands(null, null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Невозможно удалить запись потребности, так как она связана с сделкой.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Запись не найдена в базе данных.");
+                }
+            }
+        }
+
+
+        private bool IsDemandLinkedToDeal(Demand demand)
+        {
+            // Проверяем, есть ли связанные записи в сделках
+            using (var context = new RealEstateContext())
+            {
+                var linkedDeal = context.Deals.FirstOrDefault(d => d.Demand_Id == demand.Id);
+                return linkedDeal != null;
+            }
+        }
+    }
+
+    public class RequiredFieldValidationRule : ValidationRule
         {
             public override ValidationResult Validate(object value, CultureInfo cultureInfo)
             {
@@ -209,7 +273,7 @@ namespace REstate1
                 }
                 return ValidationResult.ValidResult;
             }
-        }
+    }
 
         public class PositiveIntegerValidationRule : ValidationRule
         {

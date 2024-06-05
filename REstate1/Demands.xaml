@@ -246,8 +246,8 @@
             <TextBox x:Name="MinPriceTextBox"  Margin="0 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Минимальная цена" MaxLength="7"/>
             <TextBox x:Name="MaxPriceTextBox"  Margin="0 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Максимальная цена" MaxLength="7"/>
             <Button Content="Создать"  Style="{StaticResource ActionButtonStyle}"  Margin="0 5 0 0" Click="CreateDemand"/>
-            <Button Content="Изменить"  Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
-            <Button Content="Удалить" Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0"/>
+            <Button Content="Изменить"  Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0" Click="EditDemand"/>
+            <Button Content="Удалить" Style="{StaticResource ActionButtonStyle}"  Margin="0 10 0 0" Click="DeleteDemand"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="-150 70 20 20" HorizontalAlignment="Center" Width="250">
             <TextBox x:Name="MinAreaTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. площадь" MaxLength="7" Width="120" Visibility="Collapsed"/>
@@ -257,8 +257,8 @@
             <TextBox x:Name="MinFloorTextBox" Margin="-135 10 0 0" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Мин. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
             <TextBox x:Name="MaxFloorTextBox" Margin="-135 10 0 10" Style="{StaticResource PlaceholderTextBoxStyle}" Tag="Макс. этаж" MaxLength="2" Width="120" Visibility="Collapsed"/>
         </StackPanel>
-        <ListBox x:Name="DemandsListBox" HorizontalAlignment="Left" Width="450" Height="400" Margin="540,0,0,0" VerticalAlignment="Center" BorderThickness="0" Background="Transparent">
-            <ListBox.ItemContainerStyle>
+        <ListBox x:Name="DemandsListBox" HorizontalAlignment="Left" Width="450" Height="400" Margin="540,0,0,0" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" >
+            <ListBox.ItemContainerStyle>    
                 <Style TargetType="ListBoxItem">
                     <Setter Property="Template">
                         <Setter.Value>
