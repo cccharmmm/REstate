@@ -5,6 +5,7 @@ using REstate1.Data.Entities;
 using System.Globalization;
 using System.Windows.Controls;
 using static System.Windows.Forms.AxHost;
+using System.Runtime.Remoting.Contexts;
 
 namespace REstate1
 {
@@ -194,12 +195,59 @@ namespace REstate1
                 MaxFloorTextBox.Visibility = Visibility.Collapsed;
             }
 
+
+            
         }
-    } 
+        private void DeleteDemand(object sender, RoutedEventArgs e)
+        {
+            var selectedDemand = DemandsListBox.SelectedItem as Demand;
+
+            if (selectedDemand == null)
+            {
+                MessageBox.Show("Выберите запись для удаления.");
+                return;
+            }
+
+            using (var context = new RealEstateContext())
+            {
+                var existingDemand = context.Demands.Find(selectedDemand.Id); // Проверяем существование объекта в контексте
+                if (existingDemand != null)
+                {
+                    bool isLinkedToDeal = IsDemandLinkedToDeal(selectedDemand);
+
+                    if (!isLinkedToDeal)
+                    {
+                        context.Demands.Remove(existingDemand); // Удаляем объект из контекста
+                        context.SaveChanges();
+                        LoadDemands(null, null);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Невозможно удалить запись потребности, так как она связана с сделкой.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Запись не найдена в базе данных.");
+                }
+            }
+        }
 
 
-        
-        public class RequiredFieldValidationRule : ValidationRule
+        private bool IsDemandLinkedToDeal(Demand demand)
+        {
+            // Проверяем, есть ли связанные записи в сделках
+            using (var context = new RealEstateContext())
+            {
+                var linkedDeal = context.Deals.FirstOrDefault(d => d.Demand_Id == demand.Id);
+                return linkedDeal != null;
+            }
+        }
+
+
+    }
+
+    public class RequiredFieldValidationRule : ValidationRule
         {
             public override ValidationResult Validate(object value, CultureInfo cultureInfo)
             {
@@ -209,7 +257,7 @@ namespace REstate1
                 }
                 return ValidationResult.ValidResult;
             }
-        }
+    }
 
         public class PositiveIntegerValidationRule : ValidationRule
         {
@@ -234,5 +282,6 @@ namespace REstate1
                 }
             }
         }
+
 }
 
