@@ -247,7 +247,7 @@
         <StackPanel Orientation="Horizontal" Margin="0 68 40 40" HorizontalAlignment="Right" Height="50" VerticalAlignment="Top">
             <Button Content="Обновить" Margin="10 10 0 0" Style="{StaticResource ActionButtonStyle}" Click="RefreshSupplies_Click" Width="90"/>
         </StackPanel>
-        <ListBox x:Name="SuppliesListBox" HorizontalAlignment="Right" Width="450" Height="280" Margin="0 90 40 20">
+        <ListBox x:Name="SuppliesListBox" HorizontalAlignment="Right" Width="450" Height="280" Margin="0,142,35,62">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
