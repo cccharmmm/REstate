@@ -31,8 +31,8 @@
                         Address_Street = c.String(),
                         Address_House = c.String(),
                         Address_Number = c.String(),
-                        MinPrice = c.Int(),
-                        MaxPrice = c.Int(),
+                        MinPrice = c.Long(),
+                        MaxPrice = c.Long(),
                         Id_HouseDemand = c.Int(),
                         Id_LandDemand = c.Int(),
                         Id_ApartmentDemand = c.Int(),
@@ -56,12 +56,12 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Single(nullable: false),
-                        MaxArea = c.Single(nullable: false),
-                        MinRooms = c.Int(nullable: false),
-                        MaxRooms = c.Int(nullable: false),
-                        MinFloor = c.Int(nullable: false),
-                        MaxFloor = c.Int(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
+                        MinRooms = c.Int(),
+                        MaxRooms = c.Int(),
+                        MinFloor = c.Int(),
+                        MaxFloor = c.Int(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -86,7 +86,7 @@
                         ClientId = c.Int(nullable: false),
                         AgentId = c.Int(nullable: false),
                         RealEstateId = c.Int(nullable: false),
-                        Price = c.Double(nullable: false),
+                        Price = c.Long(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Agent", t => t.AgentId, cascadeDelete: true)
@@ -188,12 +188,12 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Double(nullable: false),
-                        MaxArea = c.Double(nullable: false),
-                        MinRooms = c.Int(nullable: false),
-                        MaxRooms = c.Int(nullable: false),
-                        MinFloors = c.Int(nullable: false),
-                        MaxFloors = c.Int(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
+                        MinRooms = c.Int(),
+                        MaxRooms = c.Int(),
+                        MinFloors = c.Int(),
+                        MaxFloors = c.Int(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -202,8 +202,8 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Double(nullable: false),
-                        MaxArea = c.Double(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id);
             

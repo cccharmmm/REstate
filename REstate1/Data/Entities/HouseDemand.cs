@@ -12,13 +12,14 @@ namespace REstate1.Data.Entities
     public class HouseDemand
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public double MinArea { get; set; }
-        public double MaxArea { get; set; }
-        public int MinRooms { get; set; }
-        public int MaxRooms { get; set; }
-        public int MinFloors { get; set; }
-        public int MaxFloors { get; set; }
+        public float ?MinArea { get; set; }
+        public float ?MaxArea { get; set; }
+        public int ?MinRooms { get; set; }
+        public int ?MaxRooms { get; set; }
+        public int ?MinFloors { get; set; }
+        public int ?MaxFloors { get; set; }
 
         public virtual ICollection<Demand> Demands { get; set; }
 

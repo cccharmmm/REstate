@@ -12,9 +12,10 @@ namespace REstate1.Data.Entities
     public class LandDemand
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public double MinArea { get; set; }
-        public double MaxArea { get; set; }
+        public float ?MinArea { get; set; }
+        public float ?MaxArea { get; set; }
 
         public virtual ICollection<Demand> Demands { get; set; }
 

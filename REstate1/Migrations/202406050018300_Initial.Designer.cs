@@ -13,7 +13,7 @@ namespace REstate1.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202406041944591_Initial"; }
+            get { return "202406050018300_Initial"; }
         }
         
         string IMigrationMetadata.Source

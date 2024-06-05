@@ -12,6 +12,7 @@ namespace REstate1.Data.Entities
     public class Demand
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [ForeignKey("Client")]
         public int ClientId { get; set; }

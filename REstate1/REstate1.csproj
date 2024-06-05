@@ -215,9 +215,9 @@
     <Compile Include="EditSupply.xaml.cs">
       <DependentUpon>EditSupply.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202406041944591_Initial.cs" />
-    <Compile Include="Migrations\202406041944591_Initial.designer.cs">
-      <DependentUpon>202406041944591_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\202406050018300_Initial.cs" />
+    <Compile Include="Migrations\202406050018300_Initial.designer.cs">
+      <DependentUpon>202406050018300_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RealEstates.xaml.cs">
@@ -314,8 +314,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <EmbeddedResource Include="Migrations\202406041944591_Initial.resx">
-      <DependentUpon>202406041944591_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202406050018300_Initial.resx">
+      <DependentUpon>202406050018300_Initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
