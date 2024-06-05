@@ -132,9 +132,9 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        Floor = c.Int(nullable: false),
-                        Rooms = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        Floor = c.Int(),
+                        Rooms = c.Int(),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
@@ -155,9 +155,9 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        TotalFloors = c.Int(nullable: false),
-                        Rooms = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        TotalFloors = c.Int(),
+                        Rooms = c.Int(),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
@@ -168,7 +168,7 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
