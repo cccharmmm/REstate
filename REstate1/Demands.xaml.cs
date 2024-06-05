@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
+using System.Data.Entity;
+using REstate1.Data.Entities;
+using System.Globalization;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using static System.Windows.Forms.AxHost;
 
 namespace REstate1
 {
@@ -22,6 +16,10 @@ namespace REstate1
         public Demands()
         {
             InitializeComponent();
+            LoadClients();
+            LoadTypes();
+            Loaded += LoadDemands;
+            LoadAgents();
         }
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
@@ -57,9 +55,116 @@ namespace REstate1
             this.Close();
             deals.Show();
         }
+
+        private void LoadDemands(object sender, RoutedEventArgs e)
+        {
+            using (var context = new RealEstateContext())
+            {
+                DemandsListBox.ItemsSource = context.Demands
+                    .Include(d => d.Agent)
+                    .Include(d => d.Client)
+                    .Include(d => d.TypeRealEstate)
+                    .ToList();
+            }
+        }
+        private void LoadClients()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.Client.ToList();
+                ClientComboBox.ItemsSource = types;
+            }
+        }
+
+        private void LoadAgents()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.Agent.ToList();
+                AgentComboBox.ItemsSource = types;
+            }
+        }
+
+        private void LoadTypes()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.TypeRealEstate.ToList();
+                TypeComboBox.ItemsSource = types;
+            }
+        }
+
+        private void CreateDemand(object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientComboBox.SelectedItem as Client;
+            var selectedAgent = AgentComboBox.SelectedItem as Agent;
+            var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
+            if (selectedClient == null || selectedAgent == null || selectedType == null)
+            {
+                MessageBox.Show("Выберите все поля");
+                return;
+            }
+            using (var context = new RealEstateContext())
+            {
+                var demand = new Demand
+                {
+                    ClientId = selectedClient.Id,
+                    AgentId = selectedAgent.Id,
+                    Id_type = selectedType.Id_type,
+                    Address_City = CityTextBox.Text,
+                    Address_Street = StreetTextBox.Text,
+                    Address_House = HouseTextBox.Text,
+                    Address_Number = NumberTextBox.Text,
+                    MinPrice = int.Parse(MinPriceTextBox.Text),
+                    MaxPrice = int.Parse(MaxPriceTextBox.Text)
+                };
+                context.Demands.Add(demand);
+                context.SaveChanges();
+
+                if (selectedType.Name == "Дом")
+                {
+                    var house = new HouseDemand
+                    {
+                        Id = demand.Id,
+                        MinArea = float.Parse(MinAreaTextBox.Text),
+                        MaxArea = float.Parse(MaxAreaTextBox.Text),
+                        MinRooms = int.Parse(MinRoomsTextBox.Text),
+                        MaxRooms = int.Parse(MaxRoomsTextBox.Text),
+                        MinFloors = int.Parse(MinFloorTextBox.Text),
+                        MaxFloors = int.Parse(MaxFloorTextBox.Text)
+                    };
+                    context.Houses.Add(house);
+                }
+                else if (selectedType.Name == "Квартира")
+                {
+                    var apartment = new ApartmentDemand
+                    {
+                        Id = demand.Id,
+                        MinArea = float.Parse(MinAreaTextBox.Text),
+                        MaxArea = float.Parse(MaxAreaTextBox.Text),
+                        MinRooms = int.Parse(MinRoomsTextBox.Text),
+                        MaxRooms = int.Parse(MaxRoomsTextBox.Text),
+                        MinFloor = int.Parse(MinFloorTextBox.Text),
+                        MaxFloor = int.Parse(MaxFloorTextBox.Text)
+                    };
+                    context.ApartmentDemands.Add(apartment);
+                }
+                else if (selectedType.Name == "Земля")
+                {
+                    var land = new LandDemand
+                    {
+                        Id = demand.Id,
+                        MinArea = float.Parse(MinAreaTextBox.Text),
+                        MaxArea = int.Parse(MaxAreaTextBox.Text),
+                    };
+                    context.LandDemands.Add(land);
+                }
+                context.SaveChanges();
+            }
+        }
         private void TypeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            var selectedType = (TypeComboBox.SelectedItem as System.Windows.Controls.ComboBoxItem)?.Content.ToString();
+            var selectedType = (TypeComboBox.SelectedItem as TypeRealEstate)?.Name;
 
             if (selectedType == "Квартира" || selectedType == "Дом")
             {
@@ -90,5 +195,44 @@ namespace REstate1
             }
 
         }
-    }
+    } 
+
+
+        
+        public class RequiredFieldValidationRule : ValidationRule
+        {
+            public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+            {
+                if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+                {
+                    return new ValidationResult(false, "Поле обязательно для заполнения.");
+                }
+                return ValidationResult.ValidResult;
+            }
+        }
+
+        public class PositiveIntegerValidationRule : ValidationRule
+        {
+            public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+            {
+                int intValue;
+
+                if (int.TryParse(value.ToString(), out intValue))
+                {
+                    if (intValue >= 0)
+                    {
+                        return ValidationResult.ValidResult;
+                    }
+                    else
+                    {
+                        return new ValidationResult(false, "Значение должно быть положительным числом.");
+                    }
+                }
+                else
+                {
+                    return new ValidationResult(false, "Введите целое положительное число.");
+                }
+            }
+        }
 }
+

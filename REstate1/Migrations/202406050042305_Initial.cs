@@ -31,8 +31,8 @@
                         Address_Street = c.String(),
                         Address_House = c.String(),
                         Address_Number = c.String(),
-                        MinPrice = c.Int(),
-                        MaxPrice = c.Int(),
+                        MinPrice = c.Long(),
+                        MaxPrice = c.Long(),
                         Id_HouseDemand = c.Int(),
                         Id_LandDemand = c.Int(),
                         Id_ApartmentDemand = c.Int(),
@@ -56,12 +56,12 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Single(nullable: false),
-                        MaxArea = c.Single(nullable: false),
-                        MinRooms = c.Int(nullable: false),
-                        MaxRooms = c.Int(nullable: false),
-                        MinFloor = c.Int(nullable: false),
-                        MaxFloor = c.Int(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
+                        MinRooms = c.Int(),
+                        MaxRooms = c.Int(),
+                        MinFloor = c.Int(),
+                        MaxFloor = c.Int(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -86,7 +86,7 @@
                         ClientId = c.Int(nullable: false),
                         AgentId = c.Int(nullable: false),
                         RealEstateId = c.Int(nullable: false),
-                        Price = c.Double(nullable: false),
+                        Price = c.Long(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Agent", t => t.AgentId, cascadeDelete: true)
@@ -100,15 +100,14 @@
                 "dbo.Deal",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
-                        DemandId = c.Int(nullable: false),
-                        SupplyId = c.Int(nullable: false),
+                        Demand_Id = c.Int(nullable: false),
+                        Supply_Id = c.Int(nullable: false),
                     })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Demand", t => t.DemandId, cascadeDelete: true)
-                .ForeignKey("dbo.Supply", t => t.SupplyId, cascadeDelete: true)
-                .Index(t => t.DemandId)
-                .Index(t => t.SupplyId);
+                .PrimaryKey(t => new { t.Demand_Id, t.Supply_Id })
+                .ForeignKey("dbo.Demand", t => t.Demand_Id, cascadeDelete: true)
+                .ForeignKey("dbo.Supply", t => t.Supply_Id, cascadeDelete: true)
+                .Index(t => t.Demand_Id)
+                .Index(t => t.Supply_Id);
             
             CreateTable(
                 "dbo.RealEstate",
@@ -133,9 +132,9 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        Floor = c.Int(nullable: false),
-                        Rooms = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        Floor = c.Int(),
+                        Rooms = c.Int(),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
@@ -156,9 +155,9 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        TotalFloors = c.Int(nullable: false),
-                        Rooms = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        TotalFloors = c.Int(),
+                        Rooms = c.Int(),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
@@ -169,7 +168,7 @@
                 c => new
                     {
                         Id = c.Int(nullable: false),
-                        TotalArea = c.Single(nullable: false),
+                        TotalArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.RealEstate", t => t.Id)
@@ -189,12 +188,12 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Double(nullable: false),
-                        MaxArea = c.Double(nullable: false),
-                        MinRooms = c.Int(nullable: false),
-                        MaxRooms = c.Int(nullable: false),
-                        MinFloors = c.Int(nullable: false),
-                        MaxFloors = c.Int(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
+                        MinRooms = c.Int(),
+                        MaxRooms = c.Int(),
+                        MinFloors = c.Int(),
+                        MaxFloors = c.Int(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -203,8 +202,8 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MinArea = c.Double(nullable: false),
-                        MaxArea = c.Double(nullable: false),
+                        MinArea = c.Single(),
+                        MaxArea = c.Single(),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -222,8 +221,8 @@
             DropForeignKey("dbo.House", "Id", "dbo.RealEstate");
             DropForeignKey("dbo.RealEstate", "District_Id", "dbo.District");
             DropForeignKey("dbo.Apartment", "Id", "dbo.RealEstate");
-            DropForeignKey("dbo.Deal", "SupplyId", "dbo.Supply");
-            DropForeignKey("dbo.Deal", "DemandId", "dbo.Demand");
+            DropForeignKey("dbo.Deal", "Supply_Id", "dbo.Supply");
+            DropForeignKey("dbo.Deal", "Demand_Id", "dbo.Demand");
             DropForeignKey("dbo.Supply", "ClientId", "dbo.Client");
             DropForeignKey("dbo.Supply", "AgentId", "dbo.Agent");
             DropForeignKey("dbo.Demand", "Id_ApartmentDemand", "dbo.ApartmentDemand");
@@ -233,8 +232,8 @@
             DropIndex("dbo.Apartment", new[] { "Id" });
             DropIndex("dbo.RealEstate", new[] { "Id_type" });
             DropIndex("dbo.RealEstate", new[] { "District_Id" });
-            DropIndex("dbo.Deal", new[] { "SupplyId" });
-            DropIndex("dbo.Deal", new[] { "DemandId" });
+            DropIndex("dbo.Deal", new[] { "Supply_Id" });
+            DropIndex("dbo.Deal", new[] { "Demand_Id" });
             DropIndex("dbo.Supply", new[] { "RealEstateId" });
             DropIndex("dbo.Supply", new[] { "AgentId" });
             DropIndex("dbo.Supply", new[] { "ClientId" });

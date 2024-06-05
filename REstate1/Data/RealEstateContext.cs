@@ -19,4 +19,10 @@ public class RealEstateContext : DbContext
     public DbSet<Deal> Deals { get; set; }
     public DbSet<Demand> Demands { get; set; }
 
+    public DbSet<HouseDemand> Houses { get; set; }
+
+    public DbSet<LandDemand> LandDemands { get; set;}
+
+    public DbSet<ApartmentDemand> ApartmentDemands { get; set;}
+
 }

@@ -12,6 +12,7 @@ namespace REstate1.Data.Entities
     public class Demand
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [ForeignKey("Client")]
         public int ClientId { get; set; }
@@ -37,6 +38,6 @@ namespace REstate1.Data.Entities
         [ForeignKey("ApartmentDemand")]
         public int? Id_ApartmentDemand { get; set; }
         public virtual ApartmentDemand ApartmentDemand { get; set; }
-        public virtual ICollection<Deal> Deals { get; set; }
+        //public virtual ICollection<Deal> Deals { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using REstate1.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +24,152 @@ namespace REstate1
         public Supplies()
         {
             InitializeComponent();
+            Loaded += LoadSupplies;
+            LoadClients();
+            LoadAgents();
+            LoadEstates();
         }
+
+        private void LoadSupplies(object sender, RoutedEventArgs e)
+        {
+            using (var context = new RealEstateContext())
+            {
+                var supplies = context.Supply
+                    .Include("Client")
+                    .Include("Agent")
+                    .ToList();
+
+                SuppliesListBox.ItemsSource = supplies;
+            }
+        }
+
+
+        private void LoadClients()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.Client.ToList();
+                ClientComboBox.ItemsSource = types;
+            }
+        }
+
+        private void LoadAgents()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.Agent.ToList();
+                AgentComboBox.ItemsSource = types;
+            }
+        }
+
+        private void LoadEstates()
+        {
+            using (var context = new RealEstateContext())
+            {
+                var types = context.RealEstate
+                                   .Select(r => new
+                                   {
+                                       r.Id,
+                                       Address = r.Address_City + ", " + r.Address_Street + " " + r.Address_House
+                                   })
+                                   .ToList();
+
+                RealEstateComboBox.ItemsSource = types;
+                RealEstateComboBox.DisplayMemberPath = "Address";
+                RealEstateComboBox.SelectedValuePath = "Id";
+            }
+        }
+
+
+        private void CreateSupply(object sender, RoutedEventArgs e)
+        {
+            var selectedClient = ClientComboBox.SelectedItem as Client;
+            var selectedAgent = AgentComboBox.SelectedItem as Agent;
+            var selectedEstateId = (int?)RealEstateComboBox.SelectedValue;
+
+            if (selectedClient == null || selectedAgent == null || selectedEstateId == null)
+            {
+                MessageBox.Show("Выберите все поля");
+                return;
+            }
+
+            using (var context = new RealEstateContext())
+            {
+                var supply = new Supply
+                {
+                    ClientId = selectedClient.Id,
+                    AgentId = selectedAgent.Id,
+                    RealEstateId = selectedEstateId.Value,
+                    Price = long.Parse(PriceTextBox.Text)
+                };
+
+                context.Supply.Add(supply);
+                context.SaveChanges();
+            }
+
+            ClearForm();
+            LoadSupplies(null, null);
+        }
+
+        private void DeleteSupply(object sender, RoutedEventArgs e)
+        {
+            var selectedSup = SuppliesListBox.SelectedItem as Supply;
+            if (selectedSup == null)
+            {
+                MessageBox.Show("Выберите запись для удаления");
+                return;
+            }
+
+            // Проверка, участвует ли выбранное предложение в какой-либо сделке
+            bool isSupplyInDeal = IsSupplyInDeal(selectedSup);
+            if (isSupplyInDeal)
+            {
+                MessageBox.Show("Невозможно удалить предложение, которое участвует в сделке.");
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить данное предложение?", "Подтверждение удаления", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                using (var context = new RealEstateContext())
+                {
+                    var supply = context.Supply.Find(selectedSup.Id);
+                    if (supply != null)
+                    {
+                        context.Supply.Remove(supply);
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+            LoadSupplies(null, null);
+        }
+
+        private bool IsSupplyInDeal(Supply supply)
+        {
+            using (var context = new RealEstateContext())
+            {
+                return context.Deals.Any(deal => deal.Supply_Id == supply.Id);
+            }
+        }
+
+        private void EditSupply(object sender, RoutedEventArgs e)
+        {
+            var selectedSupply = SuppliesListBox.SelectedItem as Supply;
+
+            if (selectedSupply == null)
+            {
+                MessageBox.Show("Выберите запись для редактирования");
+                return;
+            }
+
+            var editWindow = new EditSupply(selectedSupply);
+            if (editWindow.ShowDialog() == true)
+            {
+                LoadSupplies(null, null);
+            }
+        }
+
         private void Clients_Click(object sender, RoutedEventArgs e)
         {
             Clients clients = new Clients();
@@ -50,6 +197,29 @@ namespace REstate1
             this.Close();
             demands.Show();
         }
+        private void RefreshSupplies_Click(object sender, RoutedEventArgs e)
+        {
+            LoadSupplies(sender, e);
+        }
+
+        private void PriceTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!char.IsDigit(e.Text, 0))
+            {
+                e.Handled = true; 
+            }
+        }
+
+
+
+        private void ClearForm()
+        {
+            ClientComboBox.SelectedItem = null;
+            AgentComboBox.SelectedItem = null;
+            RealEstateComboBox.SelectedItem = null;
+            PriceTextBox.Clear();
+        }
+
 
         private void Deals_Click(object sender, RoutedEventArgs e)
         {
