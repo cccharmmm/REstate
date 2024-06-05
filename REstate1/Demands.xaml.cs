@@ -97,6 +97,7 @@ namespace REstate1
 
         private void CreateDemand(object sender, RoutedEventArgs e)
         {
+            Demand demand = null;
             var selectedClient = ClientComboBox.SelectedItem as Client;
             var selectedAgent = AgentComboBox.SelectedItem as Agent;
             var selectedType = TypeComboBox.SelectedItem as TypeRealEstate;
@@ -105,23 +106,26 @@ namespace REstate1
                 MessageBox.Show("Выберите все поля");
                 return;
             }
+
             using (var context = new RealEstateContext())
             {
-                var demand = new Demand
+                if (context.Agent.Any(agent => agent.Id == selectedAgent.Id))
                 {
-                    ClientId = selectedClient.Id,
-                    AgentId = selectedAgent.Id,
-                    Id_type = selectedType.Id_type,
-                    Address_City = CityTextBox.Text,
-                    Address_Street = StreetTextBox.Text,
-                    Address_House = HouseTextBox.Text,
-                    Address_Number = NumberTextBox.Text,
-                    MinPrice = int.Parse(MinPriceTextBox.Text),
-                    MaxPrice = int.Parse(MaxPriceTextBox.Text)
-                };
-                context.Demands.Add(demand);
-                context.SaveChanges();
-
+                    var demandd = new Demand
+                    {
+                        ClientId = selectedClient.Id,
+                        AgentId = selectedAgent.Id,
+                        Id_type = selectedType.Id_type,
+                        Address_City = CityTextBox.Text,
+                        Address_Street = StreetTextBox.Text,
+                        Address_House = HouseTextBox.Text,
+                        Address_Number = NumberTextBox.Text,
+                        MinPrice = int.Parse(MinPriceTextBox.Text),
+                        MaxPrice = int.Parse(MaxPriceTextBox.Text)
+                    };
+                    context.Demands.Add(demandd);
+                    context.SaveChanges();
+                }
                 if (selectedType.Name == "Дом")
                 {
                     var house = new HouseDemand
@@ -194,10 +198,24 @@ namespace REstate1
                 MinFloorTextBox.Visibility = Visibility.Collapsed;
                 MaxFloorTextBox.Visibility = Visibility.Collapsed;
             }
-
-
-            
         }
+
+        private void EditDemand(object sender, RoutedEventArgs e)
+        {
+            Demand selectedDemand = DemandsListBox.SelectedItem as Demand;
+            if (selectedDemand != null)
+            {
+                EditDemand editDemandWindow = new EditDemand(selectedDemand);
+                editDemandWindow.ShowDialog();
+                LoadDemands(null, null);
+            }
+            else
+            {
+                MessageBox.Show("Выберите запись для редактирования.");
+            }
+        }
+
+
         private void DeleteDemand(object sender, RoutedEventArgs e)
         {
             var selectedDemand = DemandsListBox.SelectedItem as Demand;
@@ -243,8 +261,6 @@ namespace REstate1
                 return linkedDeal != null;
             }
         }
-
-
     }
 
     public class RequiredFieldValidationRule : ValidationRule
@@ -282,6 +298,5 @@ namespace REstate1
                 }
             }
         }
-
 }
 
